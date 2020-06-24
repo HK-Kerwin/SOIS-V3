@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+    <title>个人信息</title>
+    <link rel="stylesheet" th:href="@{../dist/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{../dist/layuiadmin/style/admin.css}" media="all"/>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <!--  class="layui-card-header" -->
+                <!--<div style="height: 50px;line-height: 60px;padding: 0 15px;border-bottom: 0px solid #f6f6f6;">
+
+                    <div class="table-reload-btn" style="margin-bottom: 10px;">
+
+                        <div class="layui-inline">
+                            <input class="layui-input layui-input-search" name="afterFour" id="table-demoReload-input" autocomplete="off"
+                                   placeholder="身份证后四位拼接手机号后四位"
+                                   style="width:220px;border-radius:20px;outline: none;text-indent: 3px;">
+                        </div>
+                        <button class="layui-btn layui-btn-normal layui-btn-radius" data-type="reload"
+                                data-method="searchBtn" id="search-single-stuInfo-btn">
+                            <i class="layui-icon layui-icon-search"></i>搜索
+                        </button>
+                        <button class="layui-btn layui-btn-warm layui-btn-radius" type="button" data-method="regBtn"
+                                lay-text="注册页面">
+                            <i class="layui-icon layui-icon-friends"></i>注册
+                        </button>
+
+                    </div>
+
+                </div>-->
+                <div class="layui-card-body">
+                    <table class="layui-hide" lay-filter="stu-single-table-toolbar" id="stuBaseSingleInfoTable"></table>
+
+                    <script type="text/html" id="table-toolbar-toolbar">
+                        <div class="layui-inline">
+                            <input class="layui-input layui-input-search" name="afterFour" id="table-demoReload-input" autocomplete="off"
+                                   placeholder="身份证后四位拼接手机号后四位"
+                                   style="width:220px;border-radius:20px;outline: none;text-indent: 3px;">
+                        </div>
+                        <button class="layui-btn layui-btn-normal layui-btn-radius" data-type="reload"
+                                data-method="searchBtn" id="search-single-stuInfo-btn" lay-event="search-single-stuInfo-btn">
+                            <i class="layui-icon layui-icon-search"></i>搜索
+                        </button>
+                        <button class="layui-btn layui-btn-warm layui-btn-radius" type="button" data-method="regBtn"
+                                lay-text="注册页面" lay-event="reg-single-stuInfo-btn">
+                            <i class="layui-icon layui-icon-friends"></i>注册
+                        </button>
+                    </script>
+
+                    <script type="text/html" id="table-toolbar-bar">
+                        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                        <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script th:src="@{../dist/layuiadmin/layui/layui.js}"></script>
+
+<script th:inline="javascript">
+    /*,url:'doFindInfoToAfterFour?afterFour=0'*/
+    layui.config({
+        base: '../dist/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'table', 'layer'], function () {
+        var admin = layui.admin
+            , table = layui.table
+            , layer = layui.layer;
+        var $ = layui.$;
+
+        layer.msg("请进行搜索或注册",{offset: '15px', icon: 6,time:1000});
+
+        table.render({
+            elem: '#stuBaseSingleInfoTable'
+            , toolbar: '#table-toolbar-toolbar'
+            , title: '个人用户数据表'
+            , cellMinWidth: 80
+            , loading: false
+            , page: true
+            , id: 'stuReload'
+            , cols: [
+                [
+                    {field: 't1', title: '基础信息', colspan: 14, align: 'center'}
+                    , {field: 't2', title: '教育背景', colspan: 8, align: 'center'}
+                    , {field: 't3', title: '相关工作经历', colspan: 3, align: 'center'}
+                    , {field: 't4', title: '紧急联系人', colspan: 6, align: 'center'}
+                    , {field: 't5', title: '归属', colspan: 3, align: 'center'}
+                ],
+                [
+                    {type: 'checkbox', fixed: 'left'}
+                    , {field: 'stuId', title: '编号', fixed: 'left', unresize: true, hide:true, sort: true, align: 'center'}
+                    , {field: 'stuClass', title: '班级', sort: true, align: 'center', minWidth: 160}
+                    , {field: 'avatar', title: '头像路径', align: 'center',minWidth: 100, unresize: true, hide:true}
+                    ,{field: 'avatarImg', title: '头像', align: 'center',minWidth: 100, templet: function (d) {
+                        return '<div><img style="height:35px;width:35px;border-radius:50%;line-height:50px!important;" src="'+d.avatar+'"></div>'
+                    }}
+                    , {field: 'stuName', title: '姓名', align: 'center', minWidth: 130}
+                    , {field: 'phoneNumber', title: '手机号', align: 'center', minWidth: 130}
+                    , {field: 'stuEmail', title: '邮箱', align: 'center', minWidth: 200}
+                    , {field: 'wechat', title: '微信', align: 'center', minWidth: 130}
+                    , {field: 'idCard', title: '身份证', align: 'center', minWidth: 180}
+                    , {field: 'gender', title: '性别', sort: true, align: 'center'}
+                    , {field: 'birth',  title: '出生日期', sort: true, align: 'center',  minWidth: 135}
+                    , {field: 'nativePlace', title: '籍贯', align: 'center', minWidth: 180}
+                    , {field: 'maritalStatus', title: '婚姻状况', align: 'center', minWidth: 100}
+                    , {field: 'educationBackground', title: '学历', sort: true, align: 'center', minWidth: 160}
+                    , {field: 'ebDirection', title: '学历性质', sort: true, align: 'center', minWidth: 100}
+                    , {field: 'ebReal', title: '学信网可查', sort: true, align: 'center', minWidth: 110}
+                    , {field: 'ebDouble', title: '双证具备', sort: true, align: 'center', minWidth: 100}
+                    , {field: 'englishLevel', title: '英语水平', sort: true, align: 'center', minWidth: 100}
+                    , {field: 'graduationSchool', title: '毕业学校', align: 'center', minWidth: 260}
+                    , {field: 'professional', title: '专业', align: 'center', minWidth: 250}
+                    , {field: 'graduationTime', title: '毕业时间', sort: true, align: 'center', minWidth: 135}
+                    , {field: 'oldJobs', title: '岗位', align: 'center', minWidth: 160}
+                    , {field: 'oldJobsSalary', title: '工资', sort: true, align: 'center'}
+                    , {
+                        field: 'oldJobsMonth',
+                        title: '年限',
+                        sort: true,
+                        align: 'center',
+                        templet: '<div>{{ parseFloat(d.oldJobsMonth/12).toFixed(1) }}</div>>'
+                      }
+                    , {field: 'p1Relation', title: '关系1', align: 'center'}
+                    , {field: 'urgentContactP1', title: '联系人1', align: 'center'}
+                    , {field: 'p1PhoneNumber', title: '电话1', align: 'center', minWidth: 130}
+                    , {field: 'p2Relation', title: '关系2', align: 'center'}
+                    , {field: 'urgentContactP2', title: '联系人2', align: 'center'}
+                    , {field: 'p2PhoneNumber', title: '电话2', align: 'center', minWidth: 130}
+                    , {field: 'classRoom', title: '教室', sort: true, align: 'center'}
+                    , {field: 'stuWhere', title: '中心', align: 'center'}
+                    , {field: 'stuState', title: '状态', align: 'center'}
+                    , {fixed: 'right', title: '操作', width: 70, toolbar: '#table-toolbar-bar'}
+                ]
+            ]
+            , parseData: function (res) {
+                let data = res.data;
+                for (let i in data) {
+                    data[i].idCard = data[i].idCard+'\t'
+                    data[i].phoneNumber = data[i].phoneNumber+'\t'
+                    data[i].wechat = data[i].wechat+'\t'
+                    data[i].p1PhoneNumber = data[i].p1PhoneNumber+'\t'
+                    data[i].p2PhoneNumber = data[i].p2PhoneNumber+'\t'
+
+                    data[i].birth = formatDateForDate(data[i].birth);
+                    data[i].graduationTime = formatDateForDate(data[i].graduationTime);
+                }
+            }
+            , done: function (res, curr, count) {
+                $("[data-field='stuId']").css('display', 'none');
+                $("[data-field='avatar']").css('display', 'none');
+                $('#stuBaseSingleInfoTable').next().find('.layui-table-body').find("table").find("tbody").children("tr").on('dblclick', function () {
+                    let id = JSON.stringify($('#stuBaseSingleInfoTable').next().find('.layui-table-body').find("table").find("tbody").find(".layui-table-hover").data('index'));
+                    let obj = res.data[id];
+                    //fun.openLayer(obj);
+                    openIframe(obj);
+                })
+            }
+        });
+
+        /*表格重载,搜索方法*/
+        let active = {
+            reload: function () {
+                let demoReload = $('#table-demoReload-input');
+                let index = layer.msg('查询中,请稍等',{icon:16,time:1000,shade:0})
+                //执行重载
+                setTimeout(function () {
+                    table.reload('stuReload', {
+                        url: 'doFindInfoToAfterFour'
+                        , where: {
+                            afterFour: demoReload.val()
+                        },success:function(res, curr, count){
+                            layer.msg(res.msg,{offset:'15px',time:1000});
+                        },error:function(res, curr, count){
+                            layer.msg(res.msg);
+                        }
+                    }, 'data');
+                    layer.close(index);
+                },500);
+            },
+            /* 注册页面regBtn */
+            regBtn: function () {
+                var index = layer.open({
+                    type: 2 //此处以iframe举例
+                    , title: '注册信息'
+                    , area: ['100%', '100%']
+                    , shade: 0
+                    , maxmin: true
+                    , offset: 'auto'
+                    , content: 'getStuAddPage'
+                    , zIndex: layer.zIndex //重点1
+                    , success: function (layerO) {
+                        layer.setTop(layerO); //重点2
+                    }
+                });
+                /* 自动填充*/
+                /*layer.full(index);*/
+            }
+        };
+
+        /*转换为格林威治时间*/
+        function GMTToStr(time){
+            let date = new Date(time)
+            let Str=date.getFullYear() + '-' +
+                (date.getMonth() + 1) + '-' +
+                date.getDate() + ' ' +
+                date.getHours() + ':' +
+                date.getMinutes() + ':' +
+                date.getSeconds()
+            return Str
+        }
+
+        /*双击个人信息的弹窗*/
+        function openIframe(data) {
+            data.birth = GMTToStr(data.birth);
+            data.graduationTime = GMTToStr(data.graduationTime);
+            let url = 'getStuSingleInfoPage';
+            $.ajax({
+                type: 'post',
+                url: url,
+                dataType: 'html',
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                success: function (result) {
+                    //多窗口模式，层叠置顶
+                    layer.open({
+                        type: 1 //此处以iframe举例
+                        , title: '信息展示'
+                        , area: ['100%', '100%']
+                        , shade: 0
+                        , maxmin: true
+                        , offset: 'auto'
+                        , content: result
+                        , btn: '关闭'
+                        , scrollbar: false
+                        , yes: function () {
+                            layer.closeAll();
+                        }
+                        , zIndex: layer.zIndex //重点1
+                        , success: function (layero, index) {
+                            layer.setTop(layero);
+                        },
+                        cancel: function (index, layero) {
+                            layer.close(index);
+                            return false;
+                        },
+                        full: function (index, layero) {
+                            layer.full(index);
+                            return false;
+                        },
+                        min: function (index, layero) {
+                            layer.min(index);
+                            return false;
+                        },
+                        restore: function (index, layero) {
+                            layer.restore(index);
+                            return false;
+                        }
+                    });
+                }
+            })
+        }
+
+        /* 编辑学生个人信息功能 */
+        function edit(data) {
+            window.reqData = data;
+            window.active = active;
+            let url = 'getStuEditPage';
+            layer.open({
+                type: 2 //此处以iframe举例
+                , title: '编辑信息'
+                , area: ['100%', '100%']
+                , shade: 0
+                , maxmin: true
+                , offset: 'auto'
+                , content: url
+                , zIndex: layer.zIndex //重点1
+                , success: function (layero,index) {
+                    layer.setTop(layero); //重点2
+                }
+            });
+        }
+
+
+        /* tr右侧点击功能 */
+        table.on('tool(stu-single-table-toolbar)', function (obj) {
+            let data = obj.data;
+            if (obj.event === 'edit') {
+                edit(data);
+            }
+        });
+
+        //头工具栏事件 #table-demoReload-stuInfo-btn,#
+        table.on('toolbar(stu-single-table-toolbar)', function (obj) {
+            switch (obj.event) {
+                case 'search-single-stuInfo-btn':
+                    active['reload'].call('reload');
+                    break;
+                case 'reg-single-stuInfo-btn':
+                    active['regBtn'].call('regBtn');
+                    break;
+            };
+        });
+
+        //回车键监听
+        keyupByBindId("search-single-stuInfo-btn");
+
+
+        $('.table-reload-btn .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+
+    });
+
+
+</script>
+</body>
+</html>

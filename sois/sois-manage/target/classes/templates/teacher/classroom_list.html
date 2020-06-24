@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+    <title>教室班级</title>
+    <link rel="stylesheet" th:href="@{../dist/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{../dist/layuiadmin/style/admin.css}" media="all"/>
+</head>
+<body>
+
+
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>教室班级</legend>
+</fieldset>
+<div class="layui-row">
+    <div class="box-body">
+        <div class="layui-card">
+            <!-- /.box-header -->
+            <div class="layui-card-body">
+                <table class="layui-table" lay-filter="classRoom-list-table-toolbar" id="classRoomInfoListTable">
+
+                </table>
+                <script type="text/html" id="table-toolbar-toolbar">
+                    <div class="layui-btn-group">
+                        <button class="layui-btn layui-btn-sm " lay-event="add"><i class="layui-icon">&#xe654;</i>新增
+                        </button>
+                        <button class="layui-btn layui-btn-sm " lay-event="edit"><i class="layui-icon">&#xe642;</i>修改
+                        </button>
+                        <button class="layui-btn layui-btn-sm " lay-event="delete"><i class="layui-icon">&#xe640;</i>删除
+                        </button>
+                        <button class="layui-btn layui-btn-sm " lay-event="refresh"><i class="layui-icon">&#xe666;</i>刷新
+                        </button>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="classManage"><i class="layui-icon">&#xe630;</i>班级管理
+                        </button>
+                        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="removeRepeat"><i class="layui-icon">&#xe640;</i>删除重复班级
+                        </button>
+                        <button id="importCRM" class="layui-btn layui-btn-sm " lay-event="importCRM"><i class="layui-icon">&#xe60a;</i>导入CRM学生信息表
+                        </button>
+                    </div>
+                </script>
+                <script type="text/html" id="table-toolbar-bar">
+                    <a class="layui-btn layui-btn-xs layui-btn-radius" lay-event="edit">编辑</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs layui-btn-radius" lay-event="del">删除</a>
+                </script>
+            </div>
+
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+
+    </div>
+
+
+</div>
+
+
+<script th:src="@{../dist/layuiadmin/layui/layui.js}"></script>
+<script type="text/javascript">
+    layui.config({
+        base: '../dist/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index', //主入口模块
+    }).use(['index', 'table', 'form', 'admin','upload'], function () {
+        let table = layui.table
+            , form = layui.form
+            , layer = layui.layer
+            , admin = layui.admin
+            , $ = layui.$;
+
+        table.render({
+            elem: '#classRoomInfoListTable'
+            , toolbar: '#table-toolbar-toolbar'
+            , url: '../classRoom/doFindPageClassRoomInfoList'
+            , title: '教室数据表'
+            , cellMinWidth: 80
+            , page: true
+            , id: 'classRoomInfoReload'
+            , cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'}
+                    , {
+                    field: 'classRoomId',
+                    title: '编号',
+                    fixed: 'left',
+                    unresize: true,
+                    hide: true,
+                    sort: true,
+                    align: 'center'
+                }
+                    , {field: 'classRoomNum', title: '教室号', align: 'center', minWidth: 75}
+                    , {field: 'className', title: '班级号', align: 'center', minWidth: 180}
+                    , {field: 'classDirection', title: '班级方向', align: 'center', minWidth: 90}
+                    , {field: 'seatNum', title: '座位数', align: 'center', minWidth: 75}
+                    , {field: 'fullTimeStuNum', title: '在读人数', align: 'center', minWidth: 86}
+                    , {field: 'otherStuNum', title: '其他人数', align: 'center', minWidth: 86}
+                    , {field: 'projectManager', title: '项目经理', align: 'center', minWidth: 100}
+                    , {field: 'careerDevelopment', title: '职业发展', align: 'center', minWidth: 100}
+                    , {field: 'computerNum', title: '电脑数量', align: 'center', minWidth: 100}
+                    , {field: 'displayNum', title: '显示器数量', align: 'center', minWidth: 100}
+                    , {field: 'remark', title: '备注说明', align: 'center', minWidth: 100}
+                    , {field: 'createdTime', title: '创建时间', align: 'center', minWidth: 180}
+                    , {field: 'createdUser', title: '创建者', align: 'center', minWidth: 135}
+                    , {field: 'modifiedTime', title: '修改时间', align: 'center', minWidth: 180}
+                    , {field: 'modifiedUser', title: '修改者', align: 'center', minWidth: 135}
+                    /*, {fixed: 'right', title: '操作', width: 120, align: 'center', toolbar: '#table-toolbar-bar'}*/
+
+                ]
+            ]
+            , parseData: function (res) {
+                let data = res.data;
+                for (let i in data) {
+                    data[i].createdTime = formatDateForDateTime(data[i].createdTime);
+                    data[i].modifiedTime = formatDateForDateTime(data[i].modifiedTime);
+                }
+            }
+            , done: function (res, curr, count) {
+                /*隐藏id*/
+                $("[data-field='classRoomId']").css('display', 'none');
+
+            }
+        });
+
+
+        /*表格重载,搜索方法*/
+        let active = {
+            reload: function () {
+                let index = layer.msg('查询中,请稍等', {icon: 16, time: 10000, shade: 0})
+                //执行重载
+                table.reload('classRoomInfoReload', {
+                    url: '../classRoom/doFindPageClassRoomInfoList'
+                    , done: function (res, curr, count) {
+                        layer.close(index);
+                    }
+                    , error: function (res, curr, count) {
+                        layer.msg(res.msg);
+                    }
+                }, 'data');
+            }
+        };
+
+        /* 头工具栏事件 */
+        table.on('toolbar(classRoom-list-table-toolbar)', function (obj) {
+            let data = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'add':
+                    edit(data,'add');
+                    break;
+                case 'delete':
+                    deleteClassRoom(data);
+                    break;
+                case 'edit':
+                    edit(data,'edit');
+                    break;
+                case 'refresh':
+                    active['reload'].call(this,'reload');
+                    break;
+                case 'classManage':
+                    classManage();
+                    break;
+                case 'removeRepeat':
+                    removeRepeat();
+                    break;
+                case 'importCRM':
+                    //占位使用,不得删除此监听事件
+                    break;
+            }
+            ;
+        });
+
+        function deleteClassRoom(obj) {
+            if (obj.data.length === 0) {
+                layer.msg("请选择一行进行删除", {offset: '15px'});
+            } else {
+                let classRoomIds = [];
+                let arr = obj.data;
+                for (let i = 0; i < arr.length; i++) {
+                    classRoomIds.push(arr[i].classRoomId);
+                }
+                layer.confirm('确定删除选定行的数据吗?', function (index) {
+                    $.ajax({
+                        url: '../classRoom/doRemoveClassRoomInfoByIds',
+                        data: {classRoomIds: classRoomIds.toString()},
+                        headers: {"token": layui.data(layui.setter.tableName)['token']},
+                        success: function (res) {
+                            if (res.code == 0) {
+                                layer.msg(res.msg, {offset: '15px',time:1000}, function () {
+                                    layer.close(index);
+                                    active['reload'].call(this,'reload');
+                                });
+                            } else {
+                                layer.msg(res.msg, {offset: '15px'});
+                            }
+                        },
+                        error: function (res) {
+                            layer.msg(res.msg, {offset: '15px'});
+                        }
+                    });
+                });
+            }
+        }
+
+        /* 编辑信息功能 */
+        function edit(obj, tag) {
+
+            let classRoom;
+            if (obj != null)
+                classRoom = obj.data[0];
+
+            let title;
+
+            if (tag === 'add') {
+                title = '新增教室';
+                classRoom = null;
+            }
+
+            if (tag === 'edit') {
+                if (obj.data.length > 1){
+                    layer.msg('只能选择一个修改', {offset: '15px'});
+                    return false;
+                }
+                if (obj.data.length != 1){
+                    layer.msg('请选择后修改', {offset: '15px'});
+                    return false;
+                }
+                title = '编辑教室';
+            }
+
+            let url = '../classRoom/doGetClassRoomEditPageForTeacher';
+            $.ajax({
+                url: url,
+                data: classRoom,
+                type: 'post',
+                headers: {"token": layui.data(layui.setter.tableName)['token']},
+                success: function (data) {
+                    layer.open({
+                        type: 1
+                        , title: title
+                        , area: ['590px','650px']
+                        , content: data
+                        , btn: ['提交', '退出']
+                        , yes: function () {
+                        }
+                        , success: function (layero, index) {
+                            layero.addClass('layui-form');
+                            let submitBtn = layero.find('.layui-layer-btn0');
+                            submitBtn.attr('lay-filter', 'classInfoForm').attr('lay-submit', '');
+                            layero.keydown(function (e) {
+                                if (e.keyCode == 13) {
+                                    submitBtn.click();
+                                }
+                            });
+                            let lock = false;
+                            form.on('submit(classInfoForm)', function (data) {
+                                if (lock) {
+                                    lock = false;
+                                    return false;
+                                }
+                                lock = true;
+                                let url;
+                                if (tag === 'add') {
+                                    url = '../classRoom/doSaveClassRoomInfo';
+                                }
+                                if (tag === 'edit') {
+                                    url = '../classRoom/doModifyClassRoomInfo';
+                                }
+                                $.ajax({
+                                    url: url,
+                                    data: data.field,
+                                    type: 'post',
+                                    headers: {"token": layui.data(layui.setter.tableName)['token']},
+                                    success: function (res) {
+                                        if (res.code == 0) {
+                                            layer.msg(res.msg, {offset: '15px',time:1000},function () {
+                                                layer.close(index);
+                                                //刷新，重新渲染表格
+                                                active['reload'].call(this,'reload');
+                                            });
+                                            return;
+                                        }
+                                        lock = false;
+                                        layer.msg(res.msg, {offset: '15px'});
+                                    },
+                                    error: function (res) {
+                                        lock = false;
+                                        layer.msg(res.msg, {offset: '15px'});
+                                    }
+                                });
+                                return false;
+                            });
+                        }
+
+                    });
+                }
+            });
+
+        }
+
+        /*班级信息管理*/
+        function classManage() {
+            let url = '../classInfo/doGetClassTablePageForTeacher';
+            $.ajax({
+                url: url,
+                headers: {"token": layui.data(layui.setter.tableName)['token']},
+                success: function (data) {
+                    layer.open({
+                        type: 1
+                        , title: '班级管理'
+                        , area: ['590px','550px']
+                        , content: data
+                        , btn: ['提交', '退出']
+                        , yes: function () {
+                        }
+                        , success: function (layero, index) {
+                            layero.addClass('layui-form');
+                            let submitBtn = layero.find('.layui-layer-btn0');
+                            submitBtn.attr('lay-filter', 'formClassTable').attr('lay-submit', '');
+                            /*layero.keydown(function (e) {
+                                if (e.keyCode == 13) {
+                                    submitBtn.click();
+                                }
+                            });*/
+                            let lock = false;
+                            form.on('submit(formClassTable)', function (data) {
+                                if (lock) {
+                                    lock = false;
+                                    return false;
+                                }
+                                lock = true;
+                                let result = data.field;
+                                let url = '../crm/doSaveClassInfo';
+                                $.ajax({
+                                    url: url,
+                                    data: result,
+                                    type: 'post',
+                                    headers: {"token": layui.data(layui.setter.tableName)['token']},
+                                    success: function (res) {
+                                        if (res.code == 0) {
+                                            layer.msg(res.msg, {offset: '15px',time:1000},function () {
+                                                layer.close(index);
+                                                //刷新，重新渲染表格
+                                                active['reload'].call(this,'reload');
+                                            });
+                                            return;
+                                        }
+                                        lock = false;
+                                        layer.msg(res.msg, {offset: '15px'});
+                                    },
+                                    error: function (res) {
+                                        lock = false;
+                                        layer.msg(res.msg, {offset: '15px'});
+                                    }
+                                });
+                                return false;
+                            });
+                        }
+
+                    });
+                }
+            });
+        }
+
+
+        let lock;
+        function removeRepeat() {
+            if (lock) {
+                lock = false;
+                return false;
+            }
+            lock = true;
+            let url = '../crm/doRemoveRepeatClassInfo';
+            $.ajax({
+                url: url,
+                headers: {"token": layui.data(layui.setter.tableName)['token']},
+                success: function (res) {
+                    if (res.code == 0) {
+                        layer.msg(res.msg, {offset: '15px',time:1000},function () {
+                            //刷新，重新渲染表格
+                            active['reload'].call(this,'reload');
+                        });
+                        return false;
+                    }
+                    lock = false;
+                    layer.msg(res.msg, {offset: '15px'});
+                },
+                error: function (res) {
+                    lock = false;
+                    layer.msg(res.msg, {offset: '15px'});
+                }
+            });
+            return false;
+        }
+
+        let files;
+        layui.upload.render({
+            elem: '#importCRM'
+            , url: '../crm/uploadExcel'
+            , accept: 'file'
+            , exts: 'xls|excel|xlsx*'
+            , field: 'excelFile'
+            , size: 3 * 1024 * 1024
+            , headers: {"token": layui.data(layui.setter.tableName)['token']}
+            , before: function (obj) {
+                layer.load();
+            }
+            , done: function (res, index, upload) {
+                if (res.code == '0') { //上传成功
+                    layer.closeAll('loading');
+                    layer.msg(res.msg, {offset: '15px', time: 2000})
+                    return delete this.files[index]; //删除文件队列已经上传成功的文件
+                } else {
+                    layer.closeAll('loading');
+                    layer.msg(res.msg, {offset: '15px', time: 2000})
+                }
+
+            }, choose: function (obj) {
+                files = this.files = obj.pushFile();
+
+            }, error: function (res, index, upload) {
+                layer.closeAll('loading'); //关闭loading
+                layer.msg(res.msg, {offset: '15px', time: 1000})
+            }
+        });
+
+        $('.table-reload-btn .layui-btn').on('click', function () {
+            let type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+            let othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+
+    })
+</script>
+
+</body>
+</html>
+
+

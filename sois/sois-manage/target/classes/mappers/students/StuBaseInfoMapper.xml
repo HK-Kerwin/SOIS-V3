@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tedu.sois.stu.dao.StuBaseInfoDao">
+
+    <delete id="deleteStuInfoById">
+        delete from stu_base_info
+        where stu_id in
+        <foreach collection="stuIds"
+                 item="stuId"
+                 open="("
+                 close=")"
+                 separator=",">
+            #{stuId}
+        </foreach>
+    </delete>
+
+    <resultMap type="com.tedu.sois.common.pojo.stu.StuBaseInfo" id="StuBaseInfoResult">
+        <result property="stuId"    column="stu_id"    />
+        <result property="stuClass"    column="stu_class"    />
+        <result property="stuName"    column="stu_name"    />
+        <result property="phoneNumber"    column="phone_number"    />
+        <result property="stuEmail"    column="stu_email"    />
+        <result property="wechat"    column="wechat"    />
+        <result property="idCard"    column="id_card"    />
+        <result property="gender"    column="gender"    />
+        <result property="birth"    column="birth"    />
+        <result property="nativePlace"    column="native_place"    />
+        <result property="maritalStatus"    column="marital_status"    />
+        <result property="educationBackground"    column="education_background"    />
+        <result property="ebDirection"    column="eb_direction"    />
+        <result property="ebReal"    column="eb_real"    />
+        <result property="ebDouble"    column="eb_double"    />
+        <result property="englishLevel"    column="english_level"    />
+        <result property="graduationSchool"    column="graduation_school"    />
+        <result property="professional"    column="professional"    />
+        <result property="graduationTime"    column="graduation_time"    />
+        <result property="oldJobs"    column="old_jobs"    />
+        <result property="oldJobsSalary"    column="old_jobs_salary"    />
+        <result property="oldJobsMonth"    column="old_jobs_month"    />
+        <result property="urgentContactP1"    column="urgent_contact_p1"    />
+        <result property="p1Relation"    column="p1_relation"    />
+        <result property="p1PhoneNumber"    column="p1_phone_number"    />
+        <result property="urgentContactP2"    column="urgent_contact_p2"    />
+        <result property="p2Relation"    column="p2_relation"    />
+        <result property="p2PhoneNumber"    column="p2_phone_number"    />
+        <result property="classRoom"    column="class_room"    />
+        <result property="stuWhere"    column="stu_where"    />
+        <result property="stuState"    column="stu_state"    />
+        <result property="createdTime"    column="created_time"    />
+        <result property="modifiedTime"    column="modified_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectStuBaseInfoVo">
+        select
+            stu_id,avatar,stu_class,stu_name,phone_number,
+            stu_email,wechat,id_card,gender,birth,
+            native_place,marital_status,
+            education_background,eb_direction,
+            eb_real,eb_double,english_level,
+            graduation_school,professional,graduation_time,
+            old_jobs,old_jobs_salary,old_jobs_month,
+            urgent_contact_p1,p1_relation,p1_phone_number,
+            urgent_contact_p2,p2_relation,p2_phone_number,
+            class_room,stu_where,stu_state,
+            created_time,modified_time,del_flag
+
+        from
+            stu_base_info
+    </sql>
+
+    <select id="selectStuClassNumList" resultType="java.lang.String">
+        SELECT stu_class FROM stu_base_info
+        GROUP BY stu_class
+        ORDER BY stu_class ASC
+    </select>
+
+
+    <select id="selectByIdCardAndPhoneNumber" resultType="com.tedu.sois.common.pojo.stu.StuBaseInfo"
+            parameterType="java.lang.String">
+        <include refid="selectStuBaseInfoVo"/>
+        <where>
+            del_flag = '0'
+            <if test="afterFour != null and afterFour != ''">
+                and concat(upper(right(id_card,4)),right(phone_number,4)) = #{afterFour}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getStuInfoRowCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select count(stu_id) from stu_base_info
+        <include refid="queryWhereSelectCondition"/>
+    </select>
+
+    <select id="selectStuBaseInfoList" parameterType="com.tedu.sois.common.pojo.stu.StuBaseInfo" resultMap="StuBaseInfoResult" >
+        <include refid="selectStuBaseInfoVo"/>
+        <include refid="queryWhereSelectCondition"/>
+        order by stu_class,
+        FIELD(education_background,'初中','高中','高职','大专','三本','二本','普通一本','一本(985或211)','硕士')
+        limit #{startIndex},#{pageSize}
+    </select>
+
+
+    <sql id="selectInfoAll">
+        select * from stu_base_info
+    </sql>
+
+    <select id="selectStuBaseInfoByPhoneNumber" resultType="com.tedu.sois.common.pojo.stu.StuBaseInfo"
+            parameterType="java.lang.String">
+        <include refid="selectInfoAll"/>
+        <where>
+            del_flag = '0'
+            <if test="phoneNumber != null and phoneNumber != ''"> and phone_number=#{phoneNumber} </if>
+        </where>
+    </select>
+
+    <select id="selectStuBaseInfoByIdCard" resultType="com.tedu.sois.common.pojo.stu.StuBaseInfo"
+            parameterType="java.lang.String">
+        <include refid="selectInfoAll"/>
+        <where>
+            del_flag = '0'
+            <if test="idCard != null and idCard != ''"> and id_card=#{idCard} </if>
+        </where>
+    </select>
+
+    <select id="selectStuBaseInfoByEmail" resultType="com.tedu.sois.common.pojo.stu.StuBaseInfo"
+            parameterType="java.lang.String">
+        <include refid="selectInfoAll"/>
+        <where>
+            del_flag = '0'
+            <if test="stuEmail != null and stuEmail != ''"> and stu_email=#{stuEmail} </if>
+        </where>
+    </select>
+
+    <select id="selectStuBaseInfoByStuName" resultType="com.tedu.sois.common.pojo.stu.StuBaseInfo"
+            parameterType="java.lang.String">
+        <include refid="selectInfoAll"/>
+        <where>
+            del_flag = '0'
+            <if test="stuName != null and stuName != ''"> and stu_name like concat('%',#{stuName},'%')</if>
+        </where>
+    </select>
+
+
+    <sql id="queryWhereSelectCondition">
+        <where>
+            <if test="stuBaseInfo.stuId != null and stuBaseInfo.stuId != ''"> and stu_id = #{stuBaseInfo.stuId} </if>
+            <if test="stuBaseInfo.stuClass != null and stuBaseInfo.stuClass != ''"> and stu_class like concat('%',#{stuBaseInfo.stuClass},'%') </if>
+            <if test="stuBaseInfo.stuName != null and stuBaseInfo.stuName != ''"> and stu_name like concat('%',#{stuBaseInfo.stuName},'%') </if>
+            <if test="stuBaseInfo.phoneNumber != null and stuBaseInfo.phoneNumber != ''"> and phone_number = #{stuBaseInfo.phoneNumber} </if>
+            <if test="stuBaseInfo.stuEmail != null and stuBaseInfo.stuEmail != ''"> and stu_email = #{stuBaseInfo.stuEmail} </if>
+            <if test="stuBaseInfo.wechat != null and stuBaseInfo.wechat != ''"> and wechat = #{stuBaseInfo.wechat} </if>
+            <if test="stuBaseInfo.idCard != null and stuBaseInfo.idCard != ''"> and id_card = #{stuBaseInfo.idCard} </if>
+            <if test="stuBaseInfo.gender != null and stuBaseInfo.gender != ''"> and gender = #{stuBaseInfo.gender} </if>
+            <if test="stuBaseInfo.birth != null and stuBaseInfo.birth != ''"> and birth = #{stuBaseInfo.birth} </if>
+            <if test="stuBaseInfo.nativePlace != null and stuBaseInfo.nativePlace != ''"> and native_place like concat('%',#{stuBaseInfo.nativePlace},'%') </if>
+            <if test="stuBaseInfo.maritalStatus != null and stuBaseInfo.maritalStatus != ''"> and marital_status = #{stuBaseInfo.maritalStatus} </if>
+            <if test="stuBaseInfo.educationBackground != null and stuBaseInfo.educationBackground != ''"> and education_background = #{stuBaseInfo.educationBackground} </if>
+            <if test="stuBaseInfo.ebDirection != null and stuBaseInfo.ebDirection != ''"> and eb_direction = #{stuBaseInfo.ebDirection} </if>
+            <if test="stuBaseInfo.ebReal != null and stuBaseInfo.ebReal != ''"> and eb_real = #{stuBaseInfo.ebReal} </if>
+            <if test="stuBaseInfo.ebDouble != null and stuBaseInfo.ebDouble != ''"> and eb_double = #{stuBaseInfo.ebDouble} </if>
+            <if test="stuBaseInfo.englishLevel != null and stuBaseInfo.englishLevel != ''"> and english_level = #{stuBaseInfo.englishLevel} </if>
+            <if test="stuBaseInfo.graduationSchool != null and stuBaseInfo.graduationSchool != ''"> and graduation_school = #{stuBaseInfo.graduationSchool} </if>
+            <if test="stuBaseInfo.professional != null and stuBaseInfo.professional != ''"> and professional = #{stuBaseInfo.professional} </if>
+            <if test="stuBaseInfo.graduationTime != null and stuBaseInfo.graduationTime != ''"> and graduation_time = #{stuBaseInfo.graduationTime} </if>
+            <if test="stuBaseInfo.oldJobs != null and stuBaseInfo.oldJobs != ''"> and old_jobs = #{stuBaseInfo.oldJobs} </if>
+            <if test="stuBaseInfo.oldJobsSalary != null and stuBaseInfo.oldJobsSalary != ''"> and old_jobs_salary = #{stuBaseInfo.oldJobsSalary} </if>
+            <if test="stuBaseInfo.oldJobsMonth != null and stuBaseInfo.oldJobsMonth != ''"> and old_jobs_month = #{stuBaseInfo.oldJobsMonth} </if>
+            <if test="stuBaseInfo.urgentContactP1 != null and stuBaseInfo.urgentContactP1 != ''"> and urgent_contact_p1 = #{stuBaseInfo.urgentContactP1} </if>
+            <if test="stuBaseInfo.p1Relation != null and stuBaseInfo.p1Relation != ''"> and p1_relation = #{stuBaseInfo.p1Relation} </if>
+            <if test="stuBaseInfo.p1PhoneNumber != null and stuBaseInfo.p1PhoneNumber != ''"> and p1_phone_number = #{stuBaseInfo.p1PhoneNumber} </if>
+            <if test="stuBaseInfo.urgentContactP2 != null and stuBaseInfo.urgentContactP2 != ''"> and urgent_contact_p2 = #{stuBaseInfo.urgentContactP2} </if>
+            <if test="stuBaseInfo.p2Relation != null and stuBaseInfo.p2Relation != ''"> and p2_relation = #{stuBaseInfo.p2Relation} </if>
+            <if test="stuBaseInfo.p2PhoneNumber != null and stuBaseInfo.p2PhoneNumber != ''"> and p2_phone_number = #{stuBaseInfo.p2PhoneNumber} </if>
+            <if test="stuBaseInfo.classRoom != null and stuBaseInfo.classRoom != ''"> and class_room = #{stuBaseInfo.classRoom} </if>
+            <if test="stuBaseInfo.stuWhere != null and stuBaseInfo.stuWhere != ''"> and stu_where = #{stuBaseInfo.stuWhere} </if>
+            <if test="stuBaseInfo.stuState != null and stuBaseInfo.stuState != ''"> and stu_state = #{stuBaseInfo.stuState} </if>
+            <if test="stuBaseInfo.createdTime != null "> and created_time = #{stuBaseInfo.createdTime} </if>
+            <if test="stuBaseInfo.modifiedTime != null "> and modified_time = #{stuBaseInfo.modifiedTime} </if>
+            <if test="stuBaseInfo.delFlag != null and stuBaseInfo.delFlag != ''"> and del_flag = #{stuBaseInfo.delFlag} </if>
+        </where>
+    </sql>
+
+    
+    
+</mapper>

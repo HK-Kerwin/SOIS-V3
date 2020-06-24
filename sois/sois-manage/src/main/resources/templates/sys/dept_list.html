@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport"
+		  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+	<title>部门管理</title>
+	<link rel="stylesheet" th:href="@{../dist/layuiadmin/layui/css/layui.css}" media="all"/>
+	<link rel="stylesheet" th:href="@{../dist/layuiadmin/style/admin.css}" media="all"/>
+	<link rel="stylesheet" th:href="@{../dist/layuiadmin/treetable-lay/treeTable.css}" media="all"/>
+</head>
+<body>
+
+
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+	<legend>部门管理</legend>
+</fieldset>
+<div class="layui-row">
+	<div class="box-body">
+		<div class="layui-card">
+
+			<!-- /.box-header -->
+			<div class="layui-card-body">
+				<table class="layui-table" lay-filter="dept-list-table-toolbar" id="deptInfoListTable">
+
+				</table>
+				<script type="text/html" id="table-toolbar-toolbar">
+					<div class="layui-btn-group">
+						<button class="layui-btn layui-btn-sm " lay-event="add"><i class="layui-icon">&#xe654;</i>新增
+						</button>
+						<button class="layui-btn layui-btn-sm " lay-event="edit"><i class="layui-icon">&#xe642;</i>修改
+						</button>
+						<button class="layui-btn layui-btn-sm " lay-event="delete"><i class="layui-icon">&#xe640;</i>删除
+						</button>
+						<button class="layui-btn layui-btn-sm " lay-event="refresh"><i class="layui-icon">&#xe666;</i>刷新
+						</button>
+						<button class="layui-btn layui-btn-sm " lay-event="expandOrFoldAll"><i class="layui-icon">&#xe66b;</i>展开全部
+						</button>
+					</div>
+				</script>
+			</div>
+
+			<!-- /.box-body -->
+		</div>
+		<!-- /.box -->
+
+	</div>
+
+
+</div>
+
+
+<!--<script th:src="@{../dist/layuiadmin/treetable/treeTable.js}"></script>-->
+<script th:src="@{../dist/layuiadmin/layui/layui.js}"></script>
+<script type="text/javascript">
+	layui.config({
+		base: '../dist/layuiadmin/' //静态资源所在路径
+	}).extend({
+		index: 'lib/index', //主入口模块
+		treeTable: '../treetable-lay/treeTable',
+		treeSelect: 'treeSelect/treeSelect'
+	}).use(['index', 'treeTable', 'table', 'layer','form'], function () {
+		var table = layui.table
+				, layer = layui.layer
+				, treeTable = layui.treeTable
+				, form = layui.form
+				, $ = layui.$;
+
+
+		let insTb = treeTable.render({
+			elem: '#deptInfoListTable',
+			toolbar: '#table-toolbar-toolbar',
+			title: '部门数据表',
+			cellMinWidth: 80,
+			height: 'full-150',
+			page: false,
+			id: 'deptInfoReload',
+			url: '../dept/doFindDeptInfoList',
+			headers: {"token": layui.data(layui.setter.tableName)['token']},
+			tree: {
+				iconIndex: 2,	//树形图标显示在第几列
+				isPidData: true,	// 是否是id、pid形式数据
+				idName: 'deptId',	//id字段的名称
+				pidName: 'parentId', 	//父级节点字段
+				defaultClose: true,	//是否默认折叠
+				linkage: false,	//父级展开时是否自动展开所有子级
+				getIcon: function (d) {  // 自定义图标
+					return '<i class="layui-icon layui-icon-group"></i>';
+				}
+			},
+			cols: [
+				[
+					{type: 'radio', title: '选择'}
+					, {type: 'numbers', title: '编号', align: 'center', minWidth: 80, unresize: false}
+					, {field: 'deptName', title: '部门名称', align: 'left', minWidth: 200, unresize: true}
+					, {field: 'haveChild', title: '菜单图标', align: 'left', minWidth: 20, hide: true}
+					, {field: 'leader', title: '负责人', align: 'center', minWidth: 150, unresize: true}
+					, {field: 'parentName', title: '上机机构', align: 'center', minWidth: 200, unresize: true}
+					, {field: 'note', title: '备注', align: 'center', minWidth: 140, unresize: true}
+					, {field: 'sort', title: '排序号', align: 'center', unresize: true}
+					, {field: 'createdTime', title: '创建时间', align: 'center', minWidth: 180, unresize: true}
+					, {field: 'createdUser', title: '创建者', align: 'center', minWidth: 135, unresize: true}
+					, {field: 'modifiedTime', title: '修改时间', align: 'center', minWidth: 180, unresize: true}
+					, {field: 'modifiedUser', title: '修改者', align: 'center', minWidth: 135, unresize: true}
+
+				]
+			]
+		});
+
+
+		let flag = true;
+		/* 头工具栏事件 */
+		treeTable.on('toolbar(deptInfoListTable)', function (obj) {
+			let data = insTb.checkStatus();
+			switch (obj.event) {
+				case 'add':
+					active.addOrEditMenu(data,'add');
+					break;
+				case 'delete':
+					active.deleteMenu(data);
+					break;
+				case 'edit':
+					active.addOrEditMenu(data,'edit');
+					break;
+				case 'refresh':
+					insTb.refresh();
+					break;
+				case 'expandOrFoldAll':
+					if (flag){
+						insTb.expandAll();
+						this.innerHTML = '<i class="layui-icon">&#xe668;</i>折叠全部';
+						flag = false;
+					} else {
+						insTb.foldAll();
+						this.innerHTML = '<i class="layui-icon">&#xe66b;</i>展开全部';
+						flag = true;
+					}
+					break;
+			}
+			;
+		});
+
+		var active = {
+			/*增加菜单信息*/
+			addOrEditMenu: function (obj,tag) {
+				let title;
+				let data = obj[0];
+				if ( tag === 'add') {
+					title = '新增部门';
+					data = null;
+				}
+				if ( tag === 'edit') {
+					if (data == null){
+						layer.msg('请选择后编辑', {offset: '15px'})
+						return false;
+					}
+					title = '编辑部门';
+				}
+				$.ajax({
+					url: '../dept/editPage',
+					data: data,
+					type: 'post',
+					headers: {"token": layui.data(layui.setter.tableName)['token']},
+					success: function (data) {
+						layer.open({
+							type: 1,
+							title: title,
+							area: ['590px'],
+							content: data,
+							btn: ['提交', '退出'],
+							yes: function () {
+							},
+							success: function (layero, index) {
+								layero.addClass('layui-form');
+								let submitBtn = layero.find('.layui-layer-btn0');
+								submitBtn.attr('lay-filter', 'formMenu').attr('lay-submit', '');
+								layero.keydown(function (e) {
+									if (e.keyCode == 13) {
+										submitBtn.click();
+									}
+								});
+								let lock = false;
+								form.on('submit(formMenu)', function (data) {
+									if (lock) {
+										lock = false;
+										return false;
+									}
+									lock = true;
+									let url;
+									if ( tag === 'add') {
+										url = '../dept/doSaveSysDeptInfo';
+									}
+									if ( tag === 'edit') {
+										url = '../dept/doModifySysDeptInfo';
+									}
+									$.ajax({
+										url:url,
+										data: data.field,
+										type: 'post',
+										headers: {"token": layui.data(layui.setter.tableName)['token']},
+										success: function (res) {
+											if (res.code == 0) {
+												layer.msg(res.msg, {offset: '15px'},function () {
+													layer.close(index);
+													//刷新，重新渲染表格
+													insTb.refresh();
+													return;
+												});
+											}
+											lock = false;
+											layer.msg(res.msg, {offset: '15px'});
+										},
+										error: function (res) {
+											lock = false;
+											layer.msg(res.msg, {offset: '15px'});
+										}
+									});
+									return false;
+								});
+							}
+						});
+					}
+				})
+			},
+			/* 删除菜单信息*/
+			deleteMenu: function (data) {
+				if (data.length != 1) {
+					layer.msg("请选择一行进行删除", {offset: '15px'});
+				} else {
+					let deptId = data[0].deptId;
+					layer.confirm('确定删除选定行的数据吗?', function (index) {
+						$.ajax({
+							url: '../dept/doRemoveSysDeptInfo',
+							data: {deptId: deptId},
+							headers: {"token": layui.data(layui.setter.tableName)['token']},
+							success: function (res) {
+								if (res.code == 0) {
+									layer.msg(res.msg, {offset: '15px'},function () {
+										layer.close(index);
+										insTb.refresh();
+									});
+								} else {
+									layer.msg(res.msg, {offset: '15px'});
+								}
+							},
+							error: function (res) {
+								layer.msg(res.msg, {offset: '15px'});
+							}
+						});
+					});
+				}
+			}
+		}
+
+
+		$('.table-reload-btn .layui-btn').on('click', function () {
+			let type = $(this).data('type');
+			active[type] ? active[type].call(this) : '';
+			let othis = $(this), method = othis.data('method');
+			active[method] ? active[method].call(this, othis) : '';
+		});
+	})
+</script>
+
+</body>
+</html>
+
+

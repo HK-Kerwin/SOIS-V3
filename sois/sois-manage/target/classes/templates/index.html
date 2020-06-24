@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Student online information system</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+
+    <!-- improt BootStrap-->
+    <!--<link rel="stylesheet" th:href="@{bower_components/bootstrap/dist/css/bootstrap.css}" media="all">
+    <link rel="stylesheet" th:href="@{bower_components/bootstrap/dist/css/adminlte.css}" media="all">-->
+
+
+    <!-- improt layUI -->
+    <link rel="stylesheet" th:href="@{dist/layuiadmin/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{dist/layuiadmin/style/admin.css}" media="all">
+
+    <!--<script src="https://hm.baidu.com/hm.js?d214947968792b839fd669a4decaaffc"></script>-->
+    <script>
+        /^http(s*):\/\//.test(location.href) || alert('请先部署到 localhost 下再访问');
+    </script>
+    <link id="layuicss-layer" rel="stylesheet" th:href="@{dist/layuiadmin/layui/css/modules/layer/default/layer.css}"
+          media="all">
+
+</head>
+
+<body class="layui-layout-body">
+
+<div id="LAY_app">
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <!-- 头部区域 -->
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item layadmin-flexible" lay-unselect>
+                    <a href="javascript:;" layadmin-event="flexible" title="侧边伸缩">
+                        <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
+                    </a>
+                </li>
+                <!--<li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <a href="http://www.layui.com/admin/" target="_blank" title="前台">
+                        <i class="layui-icon layui-icon-website"></i>
+                    </a>
+                </li>-->
+                <li class="layui-nav-item" lay-unselect>
+                    <a href="javascript:;" layadmin-event="refresh" title="刷新">
+                        <i class="layui-icon layui-icon-refresh-3"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <input id="indexSearch" name="indexSearch" type="text" placeholder="姓名/手机号/身份证号" autocomplete="off"
+                           class="layui-input layui-input-search"
+                           lay-action="teacher/doGetStuInfoPageForTeacher?indexSearch="/>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <button id="indexSearch-btn" class="layui-btn layui-btn-radius layui-btn-primary layui-btn-sm">
+                        <i class="layui-icon layui-icon-search"></i>
+                    </button>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-tips="逝去的青春,天呐！是时间在流逝！" lay-unselect>
+                    <a id="nowTime" style="font-size:14px;" href="javascript:;">
+                    </a>
+                </li>
+            </ul>
+            <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
+                <li class="layui-nav-item" lay-unselect lay-tips="消息中心">
+                    <a lay-href="app/message/index.html" layadmin-event="message" lay-text="消息中心">
+                        <i class="layui-icon layui-icon-notice"></i>
+
+                        <!-- 如果有新消息，则显示小圆点 -->
+                        <!--<span class="layui-badge-dot"></span>-->
+                    </a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect lay-tips="更换主题">
+                    <a href="javascript:;" layadmin-event="theme">
+                        <i class="layui-icon layui-icon-theme"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect lay-tips="便签">
+                    <a href="javascript:;" layadmin-event="note">
+                        <i class="layui-icon layui-icon-note"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect lay-tips="全屏">
+                    <a href="javascript:;" layadmin-event="fullscreen">
+                        <i class="layui-icon layui-icon-screen-full"></i>
+                    </a>
+                </li>
+
+                <li class="layui-nav-item" lay-unselect="" title="没登录就点一下">
+                    <a lay-href="user/getUserInfoPage">
+                        <img th:src="${userData.avatar}" width="28px" height="30px"
+                             style="line-height: 10px;border-radius:50%;">
+                        <cite id="loginUserName" th:text="${userData.userName}" style="font-size:12px;">
+                        </cite>
+                        <span class="layui-nav-more"></span>
+                    </a>
+
+                    <dl class="layui-nav-child layui-anim layui-anim-upbit">
+                        <dd style="text-align: center;"><a lay-href="user/getUserInfoPage">基本资料</a></dd>
+                        <dd style="text-align: center;"><a lay-href="user/getModifyPasswordPage">修改密码</a></dd>
+                        <hr>
+                        <dd layadmin-event="logout" style="text-align: center;"><a th:href="@{logout}">退出/登录</a></dd>
+                    </dl>
+                </li>
+                <!-- 右上角的三个点 -->
+                <li class="layui-nav-item layui-hide-xs" lay-unselect="" lay-tips="走开">
+                    <!-- a 标签属性 layadmin-event="about"-->
+                    <a href="javascript:;"><i class="layui-icon layui-icon-more-vertical"></i></a>
+                </li>
+                <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect>
+                    <a href="javascript:;" layadmin-event="more"><i class="layui-icon layui-icon-more-vertical"></i></a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 侧边菜单 -->
+        <div class="layui-side layui-side-menu">
+            <div class="layui-side-scroll">
+                <div class="layui-logo" lay-tips="身边有朋友想来学习么？">
+                    <span>学生在线信息系统 2.0</span>
+                </div>
+
+                <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu"
+                    lay-filter="layadmin-system-side-menu">
+
+                    <li th:data-name="${um.menuName}" class="layui-nav-item" th:each="um:${userMenus}">
+                        <a href="javascript:;" th:lay-tips="${um.menuName}">
+                            <i th:class="${um.icon}"></i>
+                            <cite>[[${um.menuName}]]</cite>
+                            <span class="layui-nav-more"></span>
+                        </a>
+                        <dl th:class="${um.children}==null?'':'layui-nav-child'">
+                            <dd th:each="chOne:${um.children}">
+                                <a th:lay-href="${chOne.url}==null?'javascript:;':${chOne.url}">[[${chOne.menuName}]]</a>
+
+                                <dl th:class="${chOne.children}==null?'':'layui-nav-child'">
+                                    <dd th:each="chTwo:${chOne.children}">
+                                        <a th:lay-href="${chTwo.url}==null?'javascript:;':${chTwo.url}">[[${chTwo.menuName}]]</a>
+                                    </dd>
+                                </dl>
+                            </dd>
+                        </dl>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+
+        <!-- 页面标签 -->
+        <div class="layadmin-pagetabs" id="LAY_app_tabs">
+            <div class="layui-icon layadmin-tabs-control layui-icon-prev" layadmin-event="leftPage"></div>
+            <div class="layui-icon layadmin-tabs-control layui-icon-next" layadmin-event="rightPage"></div>
+            <div class="layui-icon layadmin-tabs-control layui-icon-down">
+                <ul class="layui-nav layadmin-tabs-select" lay-filter="layadmin-pagetabs-nav">
+                    <li class="layui-nav-item" lay-unselect>
+                        <a href="javascript:;"></a>
+                        <dl class="layui-nav-child layui-anim-fadein">
+                            <dd layadmin-event="closeThisTabs"><a lay-href="javascript:;">关闭当前标签页</a></dd>
+                            <dd layadmin-event="closeOtherTabs"><a lay-href="javascript:;">关闭其它标签页</a></dd>
+                            <dd layadmin-event="closeAllTabs"><a lay-href="javascript:;">关闭全部标签页</a></dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+            <div class="layui-tab" lay-unauto lay-allowClose="true" lay-filter="layadmin-layout-tabs">
+                <ul class="layui-tab-title" id="LAY_app_tabsheader">
+                    <li lay-id="home/console.html" lay-attr="home/console.html" class="layui-this"><i
+                            class="layui-icon layui-icon-home"></i><span>主页</span></li>
+                </ul>
+            </div>
+        </div>
+
+
+        <!-- 主体内容 -->
+        <div class="layui-body" id="LAY_app_body">
+            <div class="layadmin-tabsbody-item layui-show">
+                <iframe id="layui-layer-iframe" src="home/console" frameborder="0" class="layadmin-iframe"></iframe>
+            </div>
+        </div>
+
+        <!-- 辅助元素，一般用于移动设备下遮罩 -->
+        <div class="layadmin-body-shade" layadmin-event="shade"></div>
+    </div>
+</div>
+
+
+<script th:src="@{dist/layuiadmin/layui/layui.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    layui.config({
+        base: 'dist/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use('index', function () {
+        var layer = layui.layer,
+            $ = layui.$;
+        layui.element.render('nav', 'layadmin-system-side-menu');
+
+        layer.ready(function () {
+
+            setInterval(showNowTime, 1000);
+
+            function showNowTime() {
+                let today = new Date();
+                let y = today.getFullYear();
+                let M = today.getMonth() + 1;
+                let d = today.getDate();
+                let w = today.getDay();
+                let h = today.getHours();
+                let m = today.getMinutes();
+                let s = today.getSeconds();
+                let week = ['星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+                // add a zero in front of numbers<10
+                m = checkTime(m);
+                s = checkTime(s);
+                layui.$("#nowTime").html('<i class="layui-icon layui-icon-time"></i>' + y + '年' + M + '月' + d + "日 " + h + ':' + m + ':' + s + ' ' + week[w]);//可改变格式
+                //layui.$("#nowTime").html(y + '年' + M + '月' + d + "日 " + h + ':' + m + ':' + s + ' ' + week[w]);//可改变格式
+
+                function checkTime(i) {
+                    if (i < 10) {
+                        i = "0" + i;
+                    }
+                    return i;
+                }
+
+            }
+        });
+
+        $('#indexSearch-btn').on('click', function () {
+            checkSearch();
+        });
+
+        $('#indexSearch').keyup(function (evt) {
+            if (evt.keyCode == 13) {
+                checkSearch();
+            }
+        });
+
+        function checkSearch() {
+
+            let search_val = $.trim($('#indexSearch').val());
+            let search_type = '';
+
+            if ($.trim(search_val).length == 0) {
+                layer.msg('请输入正确的姓名或手机号');
+                return false;
+            } else if (/^((?!1{11})1\d{10})$|^(09\d{8})$/.test($.trim(search_val))) {
+                search_type = 'phoneNumber';
+            } else if (/(^\d{17}(\d|X|x)$)/.test($.trim(search_val))) {
+                search_type = 'idCard';
+            } else {
+                let reg = new RegExp("[\\u4E00-\\u9FFF]+", "g");
+                if (reg.test(search_val)) {
+                    search_type = 'stuName';
+                    if (search_val.length > 16) {
+                        layer.msg('输入的姓名过长');
+                        return false;
+                    }
+                } else {
+                    layer.msg('输入正确的姓名、身份证号、手机号');
+                    return false;
+                }
+            }
+            //teacher/doGetStuInfoPageForTeacher
+            //$('#teacher').attr('class','layui-nav-item layui-nav-itemed');
+            layui.index.openTabsPage('teacher/doGetStuInfoPageForTeacher?indexSearch=' + search_type + ':' + search_val, '分类查询');
+            return;
+        };
+
+    });
+
+
+</script>
+
+<!-- 百度统计 -->
+<!--<script>
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?d214947968792b839fd669a4decaaffc";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>-->
+<style id="LAY_layadmin_theme">.layui-side-menu, .layadmin-pagetabs .layui-tab-title li:after, .layadmin-pagetabs .layui-tab-title li.layui-this:after, .layui-layer-admin .layui-layer-title, .layadmin-side-shrink .layui-side-menu .layui-nav > .layui-nav-item > .layui-nav-child {
+    background-color: #20222A !important;
+}
+
+.layui-nav-tree .layui-this, .layui-nav-tree .layui-this > a, .layui-nav-tree .layui-nav-child dd.layui-this, .layui-nav-tree .layui-nav-child dd.layui-this a {
+    background-color: #009688 !important;
+}
+
+.layui-layout-admin .layui-logo {
+    background-color: #20222A !important;
+}</style>
+</body>
+
+</html>
+
+
+
+
+

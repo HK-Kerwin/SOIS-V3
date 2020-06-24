@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+    <title>日志管理</title>
+    <link rel="stylesheet" th:href="@{../dist/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{../dist/layuiadmin/style/admin.css}" media="all"/>
+</head>
+<body>
+
+
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>日志管理</legend>
+</fieldset>
+<div class="layui-row">
+    <div class="box-body">
+        <div class="layui-card">
+            <div style="height: 50px;line-height: 60px;padding: 0 15px;border-bottom: 0px solid #f6f6f6;">
+
+                <div class="table-reload-btn" style="margin-bottom: 10px;">
+                    <div class="layui-inline">
+                        <input class="layui-input layui-input-search" name="userName" id="table-demoReload-input"
+                               autocomplete="off"
+                               placeholder="输入用户名"
+                               style="width:220px;border-radius:20px;outline: none;text-indent: 3px;">
+                    </div>
+                    <button class="layui-btn layui-btn-normal layui-btn-radius" data-type="reload"
+                            data-method="searchBtn" id="search-logList-btn">
+                        <i class="layui-icon layui-icon-search"></i>搜索
+                    </button>
+
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <input id="chooseDate" type="text" class="layui-input" placeholder="时间范围" readonly
+                                   style="width:280px;border-radius:20px;outline: none;text-indent: 3px;">
+                        </div>
+                    </div>
+
+                    <button class="layui-btn layui-btn-danger layui-btn-radius" data-type=""
+                            data-method="" id="delete-logList-btn">
+                        <i class="layui-icon layui-icon-delete"></i>批量删除
+                    </button>
+
+                </div>
+
+            </div>
+            <!-- /.box-header -->
+            <div class="layui-card-body">
+                <table class="layui-table" lay-filter="stu-list-table-toolbar" id="logInfoListTable">
+
+                </table>
+
+                <script type="text/html" id="table-toolbar-toolbar">
+
+                </script>
+                <script type="text/html" id="table-toolbar-bar">
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                </script>
+            </div>
+
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+
+    </div>
+
+
+</div>
+
+
+<script th:src="@{../dist/layuiadmin/layui/layui.js}"></script>
+<script type="text/javascript">
+    layui.config({
+        base: '../dist/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['table', 'index','laydate'], function () {
+        let table = layui.table
+            , $ = layui.$;
+
+        table.render({
+            elem: '#logInfoListTable'
+            , toolbar: '#table-toolbar-toolbar'
+            , url: '../log/doFindPageLogInfoListByUserName'
+            , method: 'post'
+            , title: '日志数据表'
+            , cellMinWidth: 80
+            , page: true
+            , id: 'logInfoReload'
+            , cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'}
+                    , {
+                    field: 'logId',
+                    title: '编号',
+                    fixed: 'left',
+                    unresize: true,
+                    hide: true,
+                    sort: true,
+                    align: 'center'
+                }
+                    , {field: 'userName', title: '用户名', align: 'center', minWidth: 130}
+					, {field: 'operation', title: '用户操作', align: 'center', minWidth: 200}
+					, {field: 'method', title: '请求方法', align: 'center', minWidth: 130}
+					, {field: 'params', title: '请求参数', align: 'center', minWidth: 130}
+					, {field: 'millisecond', title: '执行毫秒', align: 'center', minWidth: 80}
+					, {field: 'ip', title: 'IP地址', align: 'center', minWidth: 200}
+					, {field: 'address', title: '地区', align: 'center', minWidth: 200}
+					, {field: 'isp', title: '服务商', align: 'center', minWidth: 200}
+					, {field: 'createdTime', title: '创建时间', align: 'center', minWidth: 240, sort: true}
+                    , {fixed: 'right', title: '操作', width: 70, toolbar: '#table-toolbar-bar'}
+
+                ]
+            ]
+            , parseData: function (res) {
+                let data = res.data;
+                for (let i in data) {
+                    data[i].createdTime = formatDateForDateTime(data[i].createdTime);
+                }
+            }
+            , done: function (res, curr, count) {
+                /*隐藏id*/
+                $("[data-field='stuId']").css('display', 'none');
+
+                /*获取id*/
+                $('#logInfoListTable').next().find('.layui-table-body').find("table").find("tbody").children("tr").on('dblclick', function () {
+                    let id = JSON.stringify($('#logInfoListTable').next().find('.layui-table-body').find("table").find("tbody").find(".layui-table-hover").data('index'));
+                    let obj = res.data[id];
+                    //fun.openLayer(obj);
+                    /*openIframe(obj);*/
+                })
+                layui.element.init();
+            }
+        });
+
+
+        /*表格重载,搜索方法*/
+        var active = {
+            reload: function () {
+                let index = layer.msg('查询中,请稍等', {icon: 16, time: 1000, shade: 0})
+                //执行重载
+                setTimeout(function () {
+                    table.reload('logInfoReload', {
+                        url: '../log/doFindPageLogInfoListByUserName'
+                        , where: {
+                            userName: $('#table-demoReload-input').val()
+                        }, error: function (res, curr, count) {
+                            layer.msg(res.msg);
+                        }
+                    }, 'data');
+                    layer.close(index);
+                }, 500);
+            }
+        };
+
+        $('#delete-logList-btn').on('click',function () {
+            let value = $('#chooseDate').val();
+            if (value == '' ||value == null || value == undefined) {
+                layer.msg("请选择日期后进行删除", {offset: '15px'});
+            } else {
+                let beginDate = new Date(value.toString().split('~')[0].trim());
+                let endDate = new Date(value.toString().split('~')[1].trim());
+                let param = {
+                    beginDate:beginDate,
+                    endDate:endDate
+                }
+                layer.confirm('确定删除数据吗?', function (index) {
+                    $.ajax({
+                        url: '../log/doRemoveLogInfoByTime',
+                        data: param,
+                        headers: {"token": layui.data(layui.setter.tableName)['token']},
+                        success: function (res) {
+                            if (res.code == 0) {
+                                layer.msg(res.msg, {offset: '15px'},function () {
+                                    layer.close(index);
+                                    active['reload'].call(this,'reload');
+                                });
+                            } else {
+                                layer.msg(res.msg, {offset: '15px'});
+                            }
+                        },
+                        error: function (res) {
+                            layer.msg(res.msg, {offset: '15px'});
+                        }
+                    });
+                });
+            }
+        });
+
+        layui.laydate.render({
+            elem: '#chooseDate'
+            ,type: 'datetime'
+            ,range: '~'
+            ,format: 'yyyy-M-d H:m:s'
+        });
+
+        //回车键监听
+        keyupByBindId("search-logList-btn");
+
+        $('.table-reload-btn .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+
+    })
+</script>
+
+</body>
+</html>
+
+

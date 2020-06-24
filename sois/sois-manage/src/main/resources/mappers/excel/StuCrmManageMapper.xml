@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tedu.sois.teacher.dao.StuCrmManageDao">
+
+    <insert id="insertStuCrmManage" parameterType="java.util.List" keyProperty="crmManageId" useGeneratedKeys="true">
+        insert ignore into stu_crm_manage
+        (
+        crm_id,crm_stu_name,series_class,
+        crm_class,stu_state,contract_send_type,
+        need_cost,cost_all,enter_class_time,
+        monthly_time,teaching_center,sales_center,
+        consult_name,created_name,created_time
+        )
+        values
+        <foreach collection="list" item="scm" separator=",">
+            (
+            #{scm.crmId},#{scm.crmStuName},#{scm.seriesClass},
+            #{scm.crmClass},#{scm.stuState},#{scm.contractSendType},
+            #{scm.needCost},#{scm.costAll},#{scm.enterClassTime},
+            #{scm.monthlyTime},#{scm.teachingCenter},#{scm.salesCenter},
+            #{scm.consultName},#{scm.createdName},#{scm.createdTime}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertStuClassSet" parameterType="java.util.Set" keyProperty="classId" useGeneratedKeys="true">
+        insert ignore into class_info (
+        class_name,class_direction,created_time
+        )
+        values
+        <foreach collection="collection" item="ct" separator=",">
+            (#{ct.className},#{ct.classDirection},#{ct.createdTime})
+        </foreach>
+    </insert>
+    <insert id="insertClassInfo" parameterType="com.tedu.sois.common.pojo.teacher.ClassInfo"
+            keyProperty="classId" useGeneratedKeys="true">
+        insert into class_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="className != null  and className != ''">class_name,</if>
+            <if test="classDirection != null  and classDirection != ''">class_direction,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="createdTime != null  ">created_time,</if>
+            <if test="createdUser != null  and createdUser != ''">created_user,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="className != null  and className != ''">#{className},</if>
+            <if test="classDirection != null  and classDirection != ''">#{classDirection},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="createdTime != null  ">#{createdTime},</if>
+            <if test="createdUser != null  and createdUser != ''">#{createdUser},</if>
+        </trim>
+    </insert>
+    <delete id="deleteRepeatClassInfo">
+        DELETE FROM class_info WHERE class_id IN (
+            SELECT * FROM (
+                SELECT class_id FROM class_info WHERE class_name -- 注意：多个字段此处一定要加括号，当成联合字段来处理
+                IN (
+                    -- 查找学号和姓名均重复的学生信息
+                    SELECT class_name FROM class_info GROUP BY class_name HAVING COUNT(1) > 1
+                ) AND class_id NOT IN (
+                    -- 查询最小id的记录
+                    SELECT MIN(class_id) FROM class_info GROUP BY class_name HAVING COUNT(1) > 1
+                )
+            ) AS class_info_repeat
+        );
+    </delete>
+
+    <select id="selectClassNameAllList" resultType="string">
+        SELECT class_name FROM class_info
+        /*WHERE created_time between (SELECT DATE_ADD(now(),INTERVAL -6 MONTH)) and now()*/
+        GROUP BY class_name
+        ORDER BY class_name ASC
+    </select>
+
+    <select id="selectClassDirectionByClassName" resultType="string">
+        select class_direction from class_info
+        where class_name=#{className}
+        GROUP BY class_direction
+    </select>
+</mapper>

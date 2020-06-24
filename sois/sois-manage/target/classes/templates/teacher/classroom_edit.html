@@ -1,0 +1,160 @@
+<style type="text/css">
+    .classRoom .layui-form-item {
+        margin: 20px 100px 10px 45px;
+    }
+
+    .classRoom .layui-form-label {
+        width: 80px;
+    }
+</style>
+
+<form class="layui-form classRoom" action="" method="post" lay-filter="classRoomform">
+    <input type="hidden" name="classRoomId" th:value="${classRoom.classRoomId}"/>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">教室号</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="classRoomNum" id="classRoomNum"
+                   th:value="${classRoom.classRoomNum}"
+                   placeholder="教室号" autocomplete="off" lay-verify="required">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label  class="layui-form-label">班级号</label>
+        <div class="layui-input-block">
+            <select lay-filter="chooseClassName" id="className" name="className" lay-search=""
+                    th:field="${classRoom.className}">
+                <option value="">可以搜索</option>
+                <option th:each="classNum:${classNum}" th:text="${classNum}"
+                        th:value="${classNum }" th:selected="${classRoom.className==classNum}"></option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">班级方向</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="classDirection" id="classDirection"
+                   th:value="${classRoom.classDirection}"
+                   placeholder="班级方向" autocomplete="off">
+        </div>
+    </div>
+    <!--<div class="layui-form-item">
+        <label class="layui-form-label">项目经理</label>
+        <div class="layui-input-block">
+            <select lay-filter="aihao" id="dataScope" name="dataScope" th:value="${classRoom.dataScope}" lay-verify="required">
+                <option value="">请选择</option>
+                <option value="1" th:selected="${classRoom.projectManager == '1'}">xxx</option>
+                <option value="2" th:selected="${classRoom.projectManager == '2'}">xxx</option>
+                <option value="3" th:selected="${classRoom.projectManager == '3'}">xxx</option>
+                <option value="4" th:selected="${classRoom.projectManager == '4'}">xxx</option>
+            </select>
+        </div>
+    </div>-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">座位数</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="seatNum" id="seatNum"
+                   th:value="${classRoom.seatNum}"
+                   placeholder="座位数" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">在读人数</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="fullTimeStuNum" id="fullTimeStuNum"
+                   th:value="${classRoom.fullTimeStuNum==null?0:classRoom.fullTimeStuNum}"
+                   placeholder="在读人数" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">其他人数</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="otherStuNum" id="otherStuNum"
+                   th:value="${classRoom.otherStuNum==null?0:classRoom.otherStuNum}"
+                   placeholder="其他人数" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">项目经理</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="projectManager" id="projectManager"
+                   th:value="${classRoom.projectManager}"
+                   placeholder="项目经理" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">职业发展</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="careerDevelopment" id="careerDevelopment"
+                   th:value="${classRoom.careerDevelopment}"
+                   placeholder="职业发展" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">电脑数量</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="computerNum" id="computerNum"
+                   th:value="${classRoom.computerNum}" lay-verify="number"
+                   placeholder="电脑数量" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">显示器数量</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="displayNum" id="displayNum"
+                   th:value="${classRoom.displayNum}" lay-verify="number"
+                   placeholder="显示器数量" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">备注说明</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="remark" id="remark" th:value="${classRoom.remark}"
+                   placeholder="备注说明" autocomplete="off">
+        </div>
+    </div>
+
+</form>
+
+
+<script th:inline="javascript">
+    layui.use(['form'], function () {
+        let form = layui.form,
+        $ = layui.$;
+
+        form.render();
+
+        $(document).on("input propertychange", "select[lay-search] ~ div input", function () {
+            if ($(this).val() == "") {
+                $("#className").val(''); //清空原选项值
+                $(this).parent().next().find(".layui-this").addClass(" layui-hide").removeClass("layui-this"); //清除layui选中状态
+                $('#classDirection').val("");
+            }
+        });
+
+        form.on('select(chooseClassName)',function (data) {
+            let className = data.value;
+            if (className == ''){
+                $('#classDirection').val("");
+                return false;
+            }
+            $.ajax({
+                url: '../crm/findClassDirectionByClassName',
+                data: {className:className},
+                type: 'post',
+                headers: {"token": layui.data(layui.setter.tableName)['token']},
+                success: function (res) {
+                    if (res.code == 0) {
+                        $('#classDirection').val(res.data);
+                    }{
+                        layer.msg(res.msg, {offset: '15px'});
+                    }
+                },
+                error: function (res) {
+                    layer.msg(res.msg, {offset: '15px'});
+                }
+            });
+        })
+
+    });
+</script>

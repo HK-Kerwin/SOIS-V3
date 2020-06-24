@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+    <title>用户管理</title>
+    <link rel="stylesheet" th:href="@{../dist/layuiadmin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{../dist/layuiadmin/style/admin.css}" media="all"/>
+</head>
+<body>
+
+
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>用户管理</legend>
+</fieldset>
+<div class="layui-row">
+    <div class="box-body">
+        <div class="layui-card">
+            <div style="height: 50px;line-height: 60px;padding: 0 15px;border-bottom: 0px solid #f6f6f6;">
+
+                <div class="table-reload-btn" style="margin-bottom: 10px;">
+                    <div class="layui-inline">
+                        <input class="layui-input layui-input-search" name="userName" id="table-demoReload-input"
+                               autocomplete="off"
+                               placeholder="输入用户名"
+                               style="width:220px;border-radius:20px;outline: none;text-indent: 3px;">
+                    </div>
+                    <button class="layui-btn layui-btn-normal layui-btn-radius" data-type="reload"
+                            data-method="searchBtn" id="search-userInfoList-btn">
+                        <i class="layui-icon layui-icon-search"></i>搜索
+                    </button>
+                    <button class="layui-btn layui-btn-warm layui-btn-radius" data-type="userReg"
+                            data-method="userRegBtn">
+                        <i class="layui-icon layui-icon-friends"></i>添加用户
+                    </button>
+
+                </div>
+
+            </div>
+            <!-- /.box-header -->
+            <div class="layui-card-body">
+                <table class="layui-table" lay-filter="user-list-table-toolbar" id="userInfoListTable">
+
+                </table>
+
+                <script type="text/html" id="switchStatus">
+                    <input name="status" value="{{d.userId}}" type="checkbox" lay-skin="switch" lay-text="启用|禁用" lay-filter="checkedStatus" {{ d.status == '0' ? 'checked' : '' }}>
+                </script>
+
+                <script type="text/html" id="table-toolbar-toolbar">
+
+                </script>
+                <script type="text/html" id="table-toolbar-bar">
+                    <a class="layui-btn layui-btn-xs layui-btn-radius" lay-event="edit">编辑</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs layui-btn-radius" lay-event="del">删除</a>
+                </script>
+            </div>
+
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+
+    </div>
+
+
+</div>
+
+
+<script th:src="@{../dist/layuiadmin/layui/layui.js}"></script>
+<script type="text/javascript">
+    layui.config({
+        base: '../dist/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['table', 'index', 'form', 'admin'], function () {
+        let table = layui.table
+            , form = layui.form
+            , layer = layui.layer
+            , admin = layui.admin
+            , $ = layui.$;
+
+        table.render({
+            elem: '#userInfoListTable'
+            , toolbar: '#table-toolbar-toolbar'
+            , url: '../user/doFindUserDeptByUsername'
+            , method: 'post'
+            , title: '用户数据表'
+            , cellMinWidth: 80
+            , page: true
+            , id: 'userInfoReload'
+            , cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'}
+                    , {
+                    field: 'userId',
+                    title: '编号',
+                    fixed: 'left',
+                    unresize: true,
+                    hide: true,
+                    sort: true,
+                    align: 'center'
+                }
+                    , {field: 'avatar', title: '头像路径', align: 'center', minWidth: 100, unresize: true, hide: true}
+                    , {
+                    field: 'avatarImg', title: '头像', align: 'center', minWidth: 100, templet: function (d) {
+                        return '<div><img src="' + d.avatar + '" style="height:35px;width:35px;border-radius:50%;line-height:50px!important;"></div>'
+                    }
+                }
+                    , {field: 'userName', title: '用户名', align: 'center', minWidth: 130, unresize: true}
+                    , {field: 'loginName', title: '登录账号', align: 'center', minWidth: 130, unresize: true}
+                    , {field: 'status', title: '账号状态', sort: true, align: 'center', minWidth: 130, unresize: true, templet: '#switchStatus'}
+                    , {field: 'sex', title: '性别', sort: true, align: 'center', unresize: true}
+                    , {field: 'phoneNumber', title: '手机号', align: 'center', minWidth: 130, unresize: true}
+                    , {field: 'email', title: '邮箱', align: 'center', minWidth: 200, unresize: true}
+                    , {field: 'loginIp', title: '最后登录IP', align: 'center', minWidth: 230, unresize: true}
+                    , {field: 'loginDate', title: '最后登录时间', sort: true, align: 'center', minWidth: 200, unresize: true}
+                    , {field: 'createdTime', title: '创建时间', sort: true, align: 'center', minWidth: 180, unresize: true}
+                    , {field: 'createdUser', title: '创建者', sort: true, align: 'center', minWidth: 135, unresize: true}
+                    , {field: 'modifiedTime', title: '修改时间', sort: true, align: 'center', minWidth: 180, unresize: true}
+                    , {field: 'modifiedUser', title: '修改者', sort: true, align: 'center', minWidth: 135, unresize: true}
+                    , {field: 'remark', title: '备注', align: 'center', minWidth: 135, unresize: true}
+                    , {fixed: 'right', title: '操作', width: 120, align: 'center', toolbar: '#table-toolbar-bar'}
+
+                ]
+            ]
+            , parseData: function (res) {
+                let data = res.data;
+                for (let i in data) {
+                    data[i].phoneNumber = data[i].phoneNumber + '\t';
+
+                    data[i].loginDate = formatDateForDateTime(data[i].loginDate);
+                    data[i].createdTime = formatDateForDateTime(data[i].createdTime);
+                    data[i].modifiedTime = formatDateForDateTime(data[i].modifiedTime);
+
+                }
+            }
+            , done: function (res, curr, count) {
+                /*隐藏id*/
+                $("[data-field='userId']").css('display', 'none');
+
+                /*获取id*/
+                $('#userInfoListTable').next().find('.layui-table-body').find("table").find("tbody").children("tr").on('dblclick', function () {
+                    let id = JSON.stringify($('#userInfoListTable').next().find('.layui-table-body').find("table").find("tbody").find(".layui-table-hover").data('index'));
+                    let obj = res.data[id];
+                    //fun.openLayer(obj);
+                    /*openIframe(obj);*/
+                })
+
+            }
+        });
+        /*表格重载,搜索方法*/
+        let active = {
+            reload: function () {
+                let demoReload = $('#table-demoReload-input');
+                let index = layer.msg('查询中,请稍等', {icon: 16, time: 1000, shade: 0})
+                //执行重载
+                setTimeout(function () {
+                    table.reload('userInfoReload', {
+                        url: '../user/doFindUserDeptByUsername'
+                        , where: {
+                            userName: demoReload.val()
+                        }, error: function (res, curr, count) {
+                            layer.msg(res.msg);
+                        }
+                    }, 'data');
+                    layer.close(index);
+                }, 500);
+            },
+            userReg:function () {
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    , title: '添加用户'
+                    , area: ['100%', '100%']
+                    , shade: 0
+                    , maxmin: true
+                    , offset: 'auto'
+                    , content: '../user/getUserRegisterPage'
+                    , zIndex: layer.zIndex //重点1
+                    , success: function (layero, index) {
+                        layer.setTop(layero); //重点2
+                    }
+                });
+            }
+        };
+
+
+
+
+        /* tr右侧点击功能 */
+        table.on('tool(user-list-table-toolbar)', function (obj) {
+            let data = obj.data;
+            switch(obj.event) {
+                case 'del':
+                    deleteUser(data.userId);
+                    break;
+                case 'edit':
+                    edit(data)
+                    break;
+            };
+        });
+        /* 删除用户信息*/
+        function deleteUser(userId) {
+            if (userId == null || userId == undefined) {
+                layer.msg("请选择一行进行删除", {offset: '15px'});
+            } else {
+                layer.confirm('确定删除选定行的数据吗?', function (index) {
+                    $.ajax({
+                        url: '../user/doRemoveSysUserInfoById',
+                        data: {userId: userId},
+                        headers: {"token": layui.data(layui.setter.tableName)['token']},
+                        success: function (res) {
+                            if (res.code == 0) {
+                                layer.msg(res.msg, {offset: '15px'},function () {
+                                    layer.close(index);
+                                    active['reload'].call(this,'reload');
+                                });
+                            } else {
+                                layer.msg(res.msg, {offset: '15px'});
+                            }
+                        },
+                        error: function (res) {
+                            layer.msg(res.msg, {offset: '15px'});
+                        }
+                    });
+                });
+            }
+        }
+
+        /* 编辑用户个人信息功能 */
+        function edit(data) {
+            window.active = active;
+            let url = '../user/getUserInfoPage?userId=' + data.userId;
+            layer.open({
+                type: 2 //此处以iframe举例
+                , title: '编辑信息'
+                , area: ['100%', '100%']
+                , shade: 0
+                , maxmin: true
+                , offset: 'auto'
+                , content: url
+                , zIndex: layer.zIndex //重点1
+                , success: function (layero, index) {
+                    layer.setTop(layero); //重点2
+                }
+            });
+        }
+
+        /*监听禁用启用账号开关*/
+        form.on('switch(checkedStatus)', function(obj){
+            switchStatus(this.value,obj.elem.checked);
+        });
+        /*禁用启用账号*/
+        function switchStatus(userId,checked) {
+            let param = {
+                userId: userId,
+                status: checked?'0':'1'
+            };
+            $.ajax({
+                url: '../user/doModifyStatusById',
+                type: 'get',
+                data: param,
+                dataType: 'JSON',
+                headers: {"token": layui.data(layui.setter.tableName)['token']},
+                success: function (res) {
+                    if (res.code == '0') {
+                        //监听指定开关
+                        if (checked) {
+                            layer.msg('启用', {
+                                offset: '6px', time: 2000
+                            });
+                        } else {
+                            layer.msg('禁用', {
+                                offset: '6px', time: 2000
+                            });
+                        }
+                        form.render();
+                    } else {
+                        layer.msg(res.msg, {offset: '15px', icon: 2, time: 2000})
+                    }
+                },
+                error: function (res) {
+                    layer.msg(res.msg, {offset: '15px', icon: 2, time: 2000})
+                }
+            });
+            return false;
+        }
+
+        //回车键监听
+        keyupByBindId("search-userInfoList-btn");
+
+        $('.table-reload-btn .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+    })
+</script>
+
+</body>
+</html>
+
+

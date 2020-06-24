@@ -1,0 +1,91 @@
+#项目相关配置
+sois:
+  #名称
+  name: sois
+  # 版本
+  version: 4.1.1
+  # 版权年份
+  copyrightYear: 2020
+  # 实例演示开关
+  demoEnabled: true
+  #获取id地址开关
+  addressEnabled: true
+  # 文件路径 示例（ Windows配置D:/SOIS/upload/，Linux配置 /home/SOIS/upload/）
+  profile: D:/SOIS/upload/
+  #静态资源对外暴露的访问路径(访问图片的路径)
+  staticAccessPath: /upload/**
+
+#开发环境配置
+server:
+  port: 81
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    max-threads: 800
+    # Tomcat启动初始化的线程数，默认值30
+    min-spare-threads: 30
+
+# 日志配置
+logging:
+  level:
+    com.tedu.: debug
+    org.springframework: debug
+
+# Spring配置
+spring:
+  #图片中文名请求乱码
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  # 模板引擎
+  thymeleaf:
+    mode: HTML
+    encoding: UTF-8
+    # 禁用缓存
+    cache: false
+  # 资源信息
+  messages:
+    # 国际化资源文件路径
+    basename: static/i18n/messages
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  profiles:
+    active: druid
+  # 文件上传
+  servlet:
+    multipart:
+      # 单个文件大小
+      max-file-size:  110MB
+      # 设置总上传的文件大小
+      max-request-size:  110MB
+  aop:
+    # true: CGLIB代理  false: JDK代理
+    proxy-target-class: true
+  # 服务模块
+  devtools:
+    restart:
+      # 热部署开关
+      enabled: false
+
+# MyBatis-plus
+mybatis-plus:
+  # 搜索指定包别名
+  typeAliasesPackage: com.tedu.sois.**.entity
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapperLocations: classpath*:mappers/**/*Mapper.xml
+  # 加载全局的配置文件
+  configLocation: classpath:mybatis/mybatis-config.xml
+
+#spring thread pool
+async-thread-pool:
+  corePoolSize: 20
+  maxPoolSize: 1000
+  keepAliveSeconds: 30
+  queueCapacity: 1000

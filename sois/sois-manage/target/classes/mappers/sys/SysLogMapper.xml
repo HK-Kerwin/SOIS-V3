@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tedu.sois.sys.dao.SysLogDao">
+
+   <!--<insert id="insertLogInfo">
+       insert into sys_log
+       (username,operation,method,params,millisecond,ip,created_time)
+       values
+       (#{username},#{operation},#{method},#{params},#{millisecond},#{ip},#{createdTime})
+   </insert>-->
+   
+   <delete id="deleteLogsInfo">
+       delete from sys_log
+       <!-- 方案1(但是where条件后的in表达式性能相对较差)
+       where id in 
+       <foreach collection="ids"
+                open="("
+                close=")"
+                separator=","
+                item="id">
+            #{id}    
+       </foreach>
+        -->
+        <!--方案2 -->
+       <where>
+          <foreach collection="lgoIds" item="logId">
+                  or log_id=#{logId}
+          </foreach>
+       </where>
+   </delete>
+  
+   <sql id="queryWhereId">
+      from sys_log
+      <where>
+           <if test="userName!=null and userName!=''">
+               user_name like concat("%",#{userName},"%")
+           </if>
+      </where>
+   </sql>
+   
+   <!-- 分页查询当前页记录 -->
+   <select id="selectPageLogsInfo" resultType="com.tedu.sois.common.pojo.sys.SysLog">
+          select *
+          <include refid="queryWhereId"/>
+          order by created_time desc
+          limit #{startIndex},#{limit}
+   </select>
+   <!-- 统计记录数 -->
+   <select id="getLogsInfoRowCount" resultType="int">
+        select count(log_id)
+        <include refid="queryWhereId"/>
+   </select>
+</mapper>
+
+
+
+
+
+
+

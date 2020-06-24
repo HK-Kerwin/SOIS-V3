@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tedu.sois.teacher.dao.ClassRoomDao">
+
+    <insert id="insertClassRoomInfo" parameterType="com.tedu.sois.common.pojo.teacher.ClassRoom" useGeneratedKeys="true"
+            keyProperty="classRoomId">
+        insert into class_room
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="classRoomNum != null  and classRoomNum != ''">class_room_num,</if>
+            <if test="className != null  and className != ''">class_name,</if>
+            <if test="classDirection != null  and classDirection != ''">class_direction,</if>
+            <if test="seatNum != null  and seatNum != ''">seat_num,</if>
+            <if test="fullTimeStuNum != null  and fullTimeStuNum != ''">full_time_stu_num,</if>
+            <if test="otherStuNum != null  and otherStuNum != ''">other_stu_num,</if>
+            <if test="projectManager != null  and projectManager != ''">project_manager,</if>
+            <if test="careerDevelopment != null  and careerDevelopment != ''">career_development,</if>
+            <if test="computerNum != null  and computerNum != ''">computer_num,</if>
+            <if test="displayNum != null  and displayNum != ''">display_num,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="createdTime != null  ">created_time,</if>
+            <if test="createdUser != null  and createdUser != ''">created_user,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="classRoomNum != null  and classRoomNum != ''">#{classRoomNum},</if>
+            <if test="className != null  and className != ''">#{className},</if>
+            <if test="classDirection != null  and classDirection != ''">#{classDirection},</if>
+            <if test="seatNum != null  and seatNum != ''">#{seatNum},</if>
+            <if test="fullTimeStuNum != null  and fullTimeStuNum != ''">#{fullTimeStuNum},</if>
+            <if test="otherStuNum != null  and otherStuNum != ''">#{otherStuNum},</if>
+            <if test="projectManager != null  and projectManager != ''">#{projectManager},</if>
+            <if test="careerDevelopment != null  and careerDevelopment != ''">#{careerDevelopment},</if>
+            <if test="computerNum != null  and computerNum != ''">#{computerNum},</if>
+            <if test="displayNum != null  and displayNum != ''">#{displayNum},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="createdTime != null  ">#{createdTime},</if>
+            <if test="createdUser != null  and createdUser != ''">#{createdUser},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteClassRoomInfoByIds">
+        delete from class_room
+        <where>
+            <foreach collection="classRoomIds" item="classRoomId">
+                or class_room_id=#{classRoomId}
+            </foreach>
+        </where>
+    </delete>
+
+    <update id="updateClassRoomInfo" parameterType="com.tedu.sois.common.pojo.teacher.ClassRoom">
+        update class_room
+        set
+        class_room_num = #{classRoomNum},
+        class_name = #{className},
+        class_direction = #{classDirection},
+        seat_num = #{seatNum},
+        full_time_stu_num = #{fullTimeStuNum},
+        other_stu_num = #{otherStuNum},
+        project_manager = #{projectManager},
+        career_development = #{careerDevelopment},
+        computer_num = #{computerNum},
+        display_num = #{displayNum},
+        remark = #{remark},
+        modified_time = #{modifiedTime},
+        modified_user = #{modifiedUser}
+        where class_room_id=#{classRoomId}
+    </update>
+
+    <select id="selectPageClassRoomInfoList" resultType="com.tedu.sois.common.pojo.teacher.ClassRoom">
+        select * from class_room
+        order by class_room_num
+        limit #{startIndex},#{limit}
+    </select>
+
+    <select id="selectClassRoomStatistical" resultType="com.tedu.sois.common.pojo.teacher.ClassRoomCountVo">
+        select
+        count(class_room_id) as roomNumAll,
+        sum(seat_num) as seatNumAll,
+        sum(full_time_stu_num) as fullTimeStuNumAll,
+        sum(other_stu_num) as otherStuNumAll
+        from class_room
+    </select>
+</mapper>

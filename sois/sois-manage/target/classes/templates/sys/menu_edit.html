@@ -1,0 +1,105 @@
+
+<style type="text/css">
+    .menu .layui-form-item{
+        margin: 20px 100px 10px 45px;
+    }
+    .menu .layui-form-label{
+        width: 80px;
+    }
+</style>
+
+<form class="layui-form menu" action="save" method="post" lay-filter="stuform">
+    <input type="hidden" name="menuId" th:value="${menu.menuId}" />
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">类型：</label>
+        <div class="layui-input-block">
+            <input type="radio" name="type" value="1" title="菜单" th:field="*{menu.type}" checked>
+            <input type="radio" name="type" value="2" title="按钮" th:field="*{menu.type}">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">菜单名称：</label>
+        <div class="layui-input-block">
+            <input type="text" name="menuName" lay-verify="required" th:value="${menu.menuName}" class="layui-input" autocomplete="off"/>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">上级菜单：</label>
+        <div class="layui-input-block">
+            <input type="text" name="parentId" id="tree" value="0" lay-filter="tree" class="layui-input" />
+        </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label">请求路径：</label>
+        <div class="layui-input-block">
+            <input type="text" name="url" th:value="${menu.url}" class="layui-input" autocomplete="off"/>
+        </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label">授权标识：</label>
+        <div class="layui-input-block">
+            <input type="text" name="permission" th:value="${menu.permission}" class="layui-input" autocomplete="off"/>
+        </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label">排序号：</label>
+        <div class="layui-input-block">
+            <input type="text" name="sort" th:value="${menu.sort}" class="layui-input" autocomplete="off"/>
+        </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label">图标样式：</label>
+        <div class="layui-input-block">
+            <input type="text" name="icon" th:value="${menu.icon}" class="layui-input" autocomplete="off"/>
+        </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label">备注：</label>
+        <div class="layui-input-block">
+            <textarea type="text" name="note" th:text="${menu.note}" class="layui-input" autocomplete="off"/>
+        </div>
+    </div>
+</form>
+
+
+<script th:inline="javascript">
+    layui.use(["form","treeSelect"], function () {
+        var form = layui.form
+            ,treeSelect = layui.treeSelect;
+
+        form.render();
+
+        treeSelect.render({
+            // 选择器
+            elem: '#tree',
+            // 数据
+            data: '../menu/doFindZtreeMenuNodes',
+            headers: {"token": layui.data(layui.setter.tableName)['token']},
+            // 异步加载方式：get/post，默认get
+            // type: 'post',
+            // 占位符
+            placeholder: '上级菜单',
+            // 是否开启搜索功能：true/false，默认false
+            search: true,
+            // 一些可定制的样式
+            style: {
+                folder: {
+                    enable: true
+                },
+                line: {
+                    enable: true
+                }
+            },
+            // 加载完成后的回调函数
+            success: function (d) {
+                // 选中节点，根据id筛选
+                treeSelect.checkNode('tree', [[${menu.menuId == null? parentId: menu.parentId}]]);
+                // 刷新树结构
+                treeSelect.refresh('tree');
+            }
+        });
+
+
+    });
+</script>

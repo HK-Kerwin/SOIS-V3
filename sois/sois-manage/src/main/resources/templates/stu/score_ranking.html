@@ -1,0 +1,131 @@
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">成绩排名</h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="stuClassCount"></span>
+
+                <div class="box-tools">
+                    <div class="input-group input-group-sm" style="width: 450px;">
+                        <div class="input-group-btn">
+                            <select class="form-control pull-right" id="direction" name="direction" multiple="multiple" style="width: 105px;">
+                            </select>
+                        </div>
+                        <div class="input-group-btn">
+                            <select class="form-control pull-right" id="classRoomNum" name="classRoomNum" style="width: 105px;">
+                                <option value=''>选择教室</option>
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5</option>
+                                <option>6</option>
+                                <option>7</option>
+                                <option>8</option>
+                                <option>9</option>
+                                <option>10</option>
+                                <option>11(大教室)</option>
+                                <option>12(实训室)</option>
+                                <option>13(Java训练营)</option>
+                                <option>14(UI训练营)</option>
+                                <option>校外</option>
+                            </select>
+                        </div>
+                        <div class="input-group-btn">
+                            <input type="text" name="stuClassOrClassRoom" id="stuNameId-score"
+                                   class="form-control pull-right " placeholder="姓名">
+                        </div>
+                        <div class="input-group-btn">
+                            <input type="text" name="stuClassOrClassRoom" id="searchClassNameId-score"
+                                   class="form-control pull-right " placeholder="班级号">
+                        </div>
+                        <div class="input-group-btn score-group">
+                            <button type="button" class="btn btn-default btn-search score-search">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            <button type="button" class="btn btn-default btn-add score-add">添加</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="box-tools">
+                <button id="month-score_1" type="button" class="btn btn-default">隐藏月考</button>
+                <button id="week-score_2" type="button" class="btn btn-default">隐藏周考</button>
+                <button id="other-score_3" type="button" class="btn btn-default">隐藏其他</button>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive no-padding">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th colspan="2">序号 姓名</th>
+                        <th colspan="2" class="month-score">第一次月考</th>
+                        <th colspan="2" class="month-score">第二次月考</th>
+                        <th colspan="2" class="month-score">第三次月考</th>
+                        <th colspan="2" class="week-score">周考1</th>
+                        <th colspan="2" class="week-score">周考2</th>
+                        <th colspan="2" class="week-score">周考3</th>
+                        <th colspan="2" class="week-score">周考4</th>
+                        <th colspan="2" class="week-score">周考5</th>
+                        <th colspan="2" class="week-score">周考6</th>
+                        <th colspan="2" class="week-score">周考7</th>
+                        <th colspan="2" class="week-score">周考8</th>
+                        <th colspan="2" class="other-score">其他考试</th>
+                    </tr>
+                    <tr>
+                        <th>序号</th>
+                        <th>姓名</th>
+
+                        <th class="month-score">成绩</th>
+                        <th class="month-score">排名</th>
+
+                        <th class="month-score">成绩</th>
+                        <th class="month-score">排名</th>
+
+                        <th class="month-score">成绩</th>
+                        <th class="month-score">排名</th>
+
+                        <th class="week-score">成绩</th>
+                        <th class="week-score">排名</th>
+
+                        <th class="week-score">成绩</th>
+                        <th class="week-score">排名</th>
+
+                        <th class="week-score">成绩</th>
+                        <th class="week-score">排名</th>
+
+                        <th class="week-score">成绩</th>
+                        <th class="week-score">排名</th>
+
+                        <th class="week-score">成绩</th>
+                        <th class="week-score">排名</th>
+
+                        <th class="week-score">成绩</th>
+                        <th class="week-score">排名</th>
+
+                        <th class="week-score">成绩</th>
+                        <th class="week-score">排名</th>
+
+                        <th class="week-score">成绩</th>
+                        <th class="week-score">排名</th>
+
+                        <th class="other-score">成绩</th>
+                        <th class="other-score">排名</th>
+
+                    </tr>
+                    </thead>
+                    <tbody id="tbodyId"></tbody>
+                </table>
+            </div>
+            <div id="pageId-score" class="box-footer clearfix">
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+</div>
+<script src="dist/js/stu/score_ranking.js"></script>
+<script src="dist/fSelect/fSelect.js"></script>
+
+
+

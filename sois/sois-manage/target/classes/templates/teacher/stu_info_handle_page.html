@@ -1,0 +1,32 @@
+<a href="#"><i class="fa fa-link"></i>
+    <span>教师模块</span>
+    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                      </span>
+</a>
+<ul class="treeview-menu">
+    <!--学员基本信息-->
+    <li><a id="load-stuInfo-id">学员信息</a></li>
+    <!--分等级-->
+    <li><a id="load-sorting-id">学员分类</a></li>
+    <li><a id="load-attendance-id">考勤信息</a></li>
+    <li><a id="load-interview-id">模拟面试</a></li>
+    <li><a id="load-plea-id">项目答辩</a></li>
+    <li><a id="load-scoreModify-id">成绩修改</a></li>
+    <li><a id="load-crmExcel-id">信息更新</a></li>
+</ul>
+
+<script>
+
+    $(function () {
+        /*加载教师模块*/
+        doLoadUI("load-stuInfo-id", "stuInfo/stuInfo_list");
+        doLoadUI("load-sorting-id", "stuInfo/stuInfoSorting_list");
+        // doLoadUI("load-role-id", "role/role_list");
+        // doLoadUI("load-dept-id", "dept/dept_list");
+        // doLoadUI("load-user-id", "user/user_list");
+        // doLoadUI("load-pwd-id", "user/pwd_edit");
+        doLoadUI("load-scoreModify-id", "stuInfo/score_modify");
+        doLoadUI("load-crmExcel-id", "stuInfo/crm_excel");
+    })
+</script>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>登录</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+
+    <!-- improt layUI -->
+    <link rel="stylesheet" th:href="@{dist/layuiadmin/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{dist/layuiadmin/style/admin.css}" media="all">
+    <link rel="stylesheet" th:href="@{dist/layuiadmin/style/login.css}" media="all">
+</head>
+<body>
+
+<div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login" style="display: none;">
+
+    <div class="layadmin-user-login-main">
+        <div class="layadmin-user-login-box layadmin-user-login-header"
+             lay-tips="若首次登录:账号为邮箱,密码为身份证后四位拼接手机号后四位,登录后请及时修改">
+            <h2>登录页面</h2>
+            <!--<p>layui 官方出品的单页面后台管理模板系统</p>-->
+        </div>
+        <div class="layadmin-user-login-box layadmin-user-login-header" height="50px">
+            <div id="login_account-btn" style="font-size: 16px;float: left;width: 50%;line-height: 50px;cursor: pointer;">账号登录</div>
+            <div id="login_container-btn" style="font-size: 16px;float: left;width: 50%;line-height: 50px;cursor: pointer;">钉钉登录</div>
+        </div>
+        <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+            <div height="340">
+                <div id="login_container" style="display: none"></div>
+                <div id="login_account">
+                    <div class="layui-form-item">
+                        <label class="layadmin-user-login-icon layui-icon layui-icon-username"
+                               for="LAY-user-login-username"></label>
+                        <input type="text" name="loginName" id="LAY-user-login-username" lay-verify="required"
+                               placeholder="用户名" class="layui-input">
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layadmin-user-login-icon layui-icon layui-icon-password"
+                               for="LAY-user-login-password"></label>
+                        <input type="password" name="password" id="LAY-user-login-password" lay-verify="required"
+                               placeholder="密码" class="layui-input"
+                               onpaste="return false" oncopy="return false" oncut="return false" oncontextmenu="return false">
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-row">
+                            <div class="layui-col-xs7">
+                                <label class="layadmin-user-login-icon layui-icon layui-icon-vercode"
+                                       for="user-login-verCode"></label>
+                                <input type="text" name="verCode" id="user-login-verCode" lay-verify="required"
+                                       autocomplete="off" placeholder="图形验证码" class="layui-input">
+                            </div>
+                            <div class="layui-col-xs5">
+                                <div style="margin-left: 10px;">
+                                    <!--<img src="https://www.oschina.net/action/user/captcha" class="layadmin-user-login-codeimg"
+                                         id="LAY-user-get-vercode">-->
+                                    <canvas id="canvas" class="layadmin-user-login-codeimg"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="margin-bottom: 20px;">
+                        <input type="checkbox" name="isRememberMe" lay-skin="primary" title="记住我">
+                        <a href="forget.html" class="layadmin-user-jump-change layadmin-link" style="margin-top: 7px;">忘记密码？</a>
+                    </div>
+                    <div class="layui-form-item">
+                        <button id="user-login-submit-btn" class="layui-btn layui-btn-fluid" lay-submit
+                                lay-filter="LAY-user-login-submit">登 入
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-trans layui-form-item layadmin-user-login-other">
+                <label>社交账号登入</label>
+                <a href="javascript:;" id="qqLoginBtn"><i class="layui-icon layui-icon-login-qq"></i></a>
+                <a href="javascript:;"><i class="layui-icon layui-icon-login-wechat"></i></a>
+                <a href="javascript:;"><i class="layui-icon layui-icon-login-weibo"></i></a>
+
+                <a href="reg.html" class="layadmin-user-jump-change layadmin-link">注册帐号</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!--<script th:src="@{dist/jquery/jquery-3.5.0.js}"></script>-->
+<!-- QQ -->
+<!--
+<script type="text/javascript"
+        src="http://qzonestyle.gtimg.cn/qzone/openapi/qc_loader.js" data-appid="APPID" data-redirecturi="REDIRECTURI" charset="utf-8"></script>
+-->
+
+<!-- 钉钉 -->
+<script src="http://g.alicdn.com/dingding/dinglogin/0.0.5/ddLogin.js"></script>
+<script th:src="@{dist/layuiadmin/layui/layui.js}"></script>
+<script>
+    layui.config({
+        base: 'dist/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'user', 'element'], function () {
+        let setter = layui.setter
+            , admin = layui.admin
+            , form = layui.form
+            , router = layui.router()
+            , search = router.search
+            , element = layui.element
+            , $ = layui.$;
+
+        form.render();
+
+        /*QC.Login({
+            btnId:"qqLoginBtn"	//插入按钮的节点id
+        });*/
+
+        $('#login_account-btn').on('click',function () {
+            $('#login_account').toggle();
+            $('#login_container').toggle();
+        })
+        $('#login_container-btn').on('click',function () {
+            $('#login_container').toggle();
+            $('#login_account').toggle();
+            let url = encodeURIComponent('https://www.tedugyzx.com/');
+            let appid = 'dingoaod1813nf5oa1tlwj';
+            let appsecret = 'drcHsC5FJAw8m0F4cd_PYx4gKM2FjKpEmDBWukxsia28yxvY4LSnShu541dEwruq';
+            let goto = encodeURIComponent('https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid='+appid+'&response_type=code&scope=snsapi_login&state=STATE&redirect_uri='+url);
+            let obj = DDLogin({
+                id: "login_container", //这里需要你在自己的页面定义一个HTML标签并设置id，例如<div id="login_container"></div>或<span id="login_container"></span>
+                goto: goto, //请参考注释里的方式
+                style: "border:none;background-color:#FFFFFF;",
+                width: "335",
+                height: "340"
+            });
+
+            let handleMessage = function(event) {
+                let origin = event.origin;
+                console.log("origin", event.origin);
+                if (origin == "https://login.dingtalk.com") { //判断是否来自ddLogin扫码事件。
+                    let loginTmpCode = event.data;
+                    //获取到loginTmpCode后就可以在这里构造跳转链接进行跳转了
+                    console.log("loginTmpCode", loginTmpCode);
+                    parent.window.location.href="https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid="+appid+"&response_type=code&scope=snsapi_login&state=STATE&redirect_uri="+url+"&loginTmpCode="+loginTmpCode;
+                    //https://oapi.dingtalk.com/sns/gettoken?appid=APPID&appsecret=APPSECRET
+                    let param = {appid:appid,appsecret:appsecret}
+                    $.ajax('https://oapi.dingtalk.com/sns/gettoken',param,function (res) {
+                        console.log(res)
+                    })
+                }
+            };
+            if (typeof window.addEventListener != 'undefined') {
+                window.addEventListener('message', handleMessage, false);
+            } else if (typeof window.attachEvent != 'undefined') {
+                window.attachEvent('onmessage', handleMessage);
+            }
+        })
+
+        let lock = false;
+        //提交
+        form.on('submit(LAY-user-login-submit)', function (obj) {
+            if (lock) {
+                lock = false;
+                return false;
+            }
+            lock = true;
+
+            let val = $("#user-login-verCode").val().toLowerCase();
+            let num = show_num.join("");
+
+            if (val == num) {
+                //请求登入接口
+                admin.req({
+                    url: '/user/doLogin' //实际使用请改成服务端真实接口
+                    , data: obj.field
+                    , type: "post"
+                    , success: function (res) {
+                        if (res.code == '0') {
+                            draw(show_num);
+                            //请求成功后，写入 access_token
+                            layui.data(setter.tableName,{
+                                    key: "token",
+                                    value: res.data.token
+                                }
+                            );
+                            //登入成功的提示与跳转
+                            layer.msg(res.msg+',欢迎'+res.data.user.userName,{offset: '15px', icon: 1, time: 2000}, function () {
+                                //刷新父页面
+                                parent.location.reload();
+                            })
+                        } else {
+                            $("#LAY-user-login-password").val("");
+                            $("#user-login-verCode").val("");
+                            draw(show_num);
+                            lock = false;
+                        }
+                    },
+                    error: function (res) {
+                        layer.msg(res.msg, {offset: '15px', icon: 2, time: 2000})
+                        $("#LAY-user-login-password").val("");
+                        $("#user-login-verCode").val("");
+                        draw(show_num);
+                        lock = false;
+                    }
+
+                });
+                element.init();
+                return false;
+            } else {
+                layer.msg("验证码填写错误", {offset: '15px', icon: 2, time: 2000});
+                $("#user-login-verCode").val("");
+                draw(show_num);
+                lock = false;
+            }
+        });
+
+        //回车键监听
+        keyupByBindId("user-login-submit-btn");
+
+        //首次生成验证码
+        let show_num = [];
+        draw(show_num);
+
+        $("#canvas").on('click', function () {
+            draw(show_num);
+        })
+
+        /* 验证码生成 */
+        function draw(show_num) {
+            let canvas_width = $('#canvas').width();
+            let canvas_height = $('#canvas').height();
+            let canvas = document.getElementById("canvas");//获取到canvas的对象，演员
+            let context = canvas.getContext("2d");//获取到canvas画图的环境，演员表演的舞台
+            canvas.width = canvas_width;
+            canvas.height = canvas_height;
+            let sCode = "A,B,C,E,F,G,H,J,K,L,M,N,P,Q,R,S,T,W,X,Y,Z,1,2,3,4,5,6,7,8,9,0,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z";
+            let aCode = sCode.split(",");
+            let aLength = aCode.length;//获取到数组的长度
+
+            for (let i = 0; i <= 3; i++) {
+                let j = Math.floor(Math.random() * aLength);//获取到随机的索引值
+                let deg = Math.random() * 30 * Math.PI / 180;//产生0~30之间的随机弧度
+                let txt = aCode[j];//得到随机的一个内容
+                show_num[i] = txt.toLowerCase();
+                let x = 10 + i * 20;//文字在canvas上的x坐标
+                let y = 20 + Math.random() * 8;//文字在canvas上的y坐标
+                context.font = "bold 23px 微软雅黑";
+
+                context.translate(x, y);
+                context.rotate(deg);
+
+                context.fillStyle = randomColor();
+                context.fillText(txt, 0, 0);
+
+                context.rotate(-deg);
+                context.translate(-x, -y);
+            }
+            for (let i = 0; i <= 5; i++) { //验证码上显示线条
+                context.strokeStyle = randomColor();
+                context.beginPath();
+                context.moveTo(Math.random() * canvas_width, Math.random() * canvas_height);
+                context.lineTo(Math.random() * canvas_width, Math.random() * canvas_height);
+                context.stroke();
+            }
+            for (let i = 0; i <= 30; i++) { //验证码上显示小点
+                context.strokeStyle = randomColor();
+                context.beginPath();
+                let x = Math.random() * canvas_width;
+                let y = Math.random() * canvas_height;
+                context.moveTo(x, y);
+                context.lineTo(x + 1, y + 1);
+                context.stroke();
+            }
+        }
+
+        function randomColor() {//得到随机的颜色值
+            let r = Math.floor(Math.random() * 129) ;
+            let g = Math.floor(Math.random() * 129) ;
+            let b = Math.floor(Math.random() * 129) ;
+            return "rgb(" + r + "," + g + "," + b + ")";
+        }
+
+    });
+</script>
+</body>
+</html>

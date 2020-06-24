@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tedu.sois.sys.dao.SysUserDao">
+
+
+    <insert id="insertSysUser" parameterType="com.tedu.sois.common.pojo.sys.SysUser" useGeneratedKeys="true"
+            keyProperty="userId">
+        insert into sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null  and userId != ''">user_id,</if>
+            <if test="deptId != null  and deptId != ''">dept_id,</if>
+            <if test="loginName != null  and loginName != ''">login_name,</if>
+            <if test="userName != null  and userName != ''">user_name,</if>
+            <if test="userType != null  and userType != ''">user_type,</if>
+            <if test="email != null  and email != ''">email,</if>
+            <if test="phoneNumber != null  and phoneNumber != ''">phone_number,</if>
+            <if test="sex != null  and sex != ''">sex,</if>
+            <if test="avatar != null  and avatar != ''">avatar,</if>
+            <if test="password != null  and password != ''">password,</if>
+            <if test="salt != null  and salt != ''">salt,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="loginIp != null  and loginIp != ''">login_ip,</if>
+            <if test="loginDate != null ">login_date,</if>
+            <if test="createdTime != null  ">created_time,</if>
+            <if test="modifiedTime != null  ">modified_time,</if>
+            <if test="createdUser != null  and createdUser != ''">created_user,</if>
+            <if test="modifiedUser != null  and modifiedUser != ''">modified_user,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null  and userId != ''">#{userId},</if>
+            <if test="deptId != null  and deptId != ''">#{deptId},</if>
+            <if test="loginName != null  and loginName != ''">#{loginName},</if>
+            <if test="userName != null  and userName != ''">#{userName},</if>
+            <if test="userType != null  and userType != ''">#{userType},</if>
+            <if test="email != null  and email != ''">#{email},</if>
+            <if test="phoneNumber != null  and phoneNumber != ''">#{phoneNumber},</if>
+            <if test="sex != null  and sex != ''">#{sex},</if>
+            <if test="avatar != null  and avatar != ''">#{avatar},</if>
+            <if test="password != null  and password != ''">#{password},</if>
+            <if test="salt != null  and salt != ''">#{salt},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="loginIp != null  and loginIp != ''">#{loginIp},</if>
+            <if test="loginDate != null  ">#{loginDate},</if>
+            <if test="createdTime != null  ">#{createdTime},</if>
+            <if test="modifiedTime != null  ">#{modifiedTime},</if>
+            <if test="createdUser != null  and createdUser != ''">#{createdUser},</if>
+            <if test="modifiedUser != null  and modifiedUser != ''">#{modifiedUser},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+        </trim>
+    </insert>
+
+
+    <update id="updatePassword">
+         update sys_user
+         set password=#{password},
+             salt=#{salt},
+             modified_time=now(),
+             modified_user=#{modifiedUser}
+         where user_id=#{userId}
+     </update>
+
+    <select id="findUserByLoginName"
+            resultType="com.tedu.sois.common.pojo.sys.SysUser">
+      select *
+      from sys_user
+      where login_name=#{loginName}
+    </select>
+
+
+    <update id="updateSysUserInfo" parameterType="com.tedu.sois.common.pojo.sys.SysUser">
+        update sys_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null  and userId != ''">user_id = #{userId},</if>
+            <if test="deptId != null  and deptId != ''">dept_id = #{deptId},</if>
+            <if test="loginName != null  and loginName != ''">login_name = #{loginName},</if>
+            <if test="userName != null  and userName != ''">user_name = #{userName},</if>
+            <if test="userType != null  and userType != ''">user_type = #{userType},</if>
+            <if test="email != null  and email != ''">email = #{email},</if>
+            <if test="phoneNumber != null  and phoneNumber != ''">phone_number = #{phoneNumber},</if>
+            <if test="sex != null  and sex != ''">sex = #{sex},</if>
+            <if test="avatar != null  and avatar != ''">avatar = #{avatar},</if>
+            <if test="password != null  and password != ''">password = #{password},</if>
+            <if test="salt != null  and salt != ''">salt = #{salt},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="loginIp != null  and loginIp != ''">login_ip = #{loginIp},</if>
+            <if test="loginDate != null ">login_date = #{loginDate},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="createdTime != null ">created_time = #{createdTime},</if>
+            <if test="modifiedTime != null ">modified_time = #{modifiedTime},</if>
+            <if test="createdUser != null  and createdUser != ''">created_user = #{createdUser},</if>
+            <if test="modifiedUser != null  and modifiedUser != ''">modified_user = #{modifiedUser},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+        </trim>
+        where user_id=#{userId}
+    </update>
+
+    <select id="selectUserDeptVoById" resultMap="sysUserDeptVo">
+              select * from sys_user
+              where user_id=#{userId}
+      </select>
+
+
+    <update id="updateStatusById">
+          update sys_user
+          set status=#{status},
+              modified_user=#{modifiedUser},
+              modified_time=now()
+          where user_id=#{userId}
+      </update>
+
+    <!-- resultMap一般用于自定义映射 -->
+    <resultMap type="com.tedu.sois.sys.vo.SysUserDeptVo" id="sysUserDeptVo">
+        <!-- 关联嵌套查询(association一般用于many2one,one2one)
+          本次关联查询是基于deptId查询部门信息,
+          并将部门相关信息封装到SysUserDeptVo对象的sysDept属性上.-->
+        <association property="sysDept" column="deptId" select="com.tedu.sois.sys.dao.SysDeptDao.selectDeptInfoById">
+        </association>
+        <association property="stuBaseInfo" column="userId" select="com.tedu.sois.sys.dao.SysUserDao.selectStuInfoByUserStuId">
+        </association>
+    </resultMap>
+    <!-- 分页查询实现 -->
+    <select id="findPageSysUserDeptVo" resultMap="sysUserDeptVo">
+        select *  <!-- deptId -->
+        <include refid="queryWhereId"/>
+        order by created_time desc
+        limit #{startIndex},#{pageSize}
+    </select>
+
+    <sql id="queryWhereId">
+        from sys_user
+        <where>
+            <if test="userName!=null and userName!=''">
+                user_name like concat("%",#{userName},"%")
+            </if>
+        </where>
+    </sql>
+
+    <!-- 按条件统计记录总数 -->
+    <select id="getRowCount" resultType="int">
+        select count(*)
+        <include refid="queryWhereId"/>
+    </select>
+</mapper>
+
+
+
+
+
+
+

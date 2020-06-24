@@ -1,0 +1,86 @@
+
+<style type="text/css">
+    .dept .layui-form-item{
+        margin: 20px 100px 10px 45px;
+    }
+    .dept .layui-form-label{
+        width: 80px;
+    }
+</style>
+
+<form class="layui-form dept" action="save" method="post" lay-filter="stuform">
+    <input type="hidden" name="deptId" th:value="${dept.deptId}" />
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">部门名称：</label>
+        <div class="layui-input-block">
+            <input type="text" name="deptName" lay-verify="required" th:value="${dept.deptName}" class="layui-input" autocomplete="off"/>
+        </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label">负责人：</label>
+        <div class="layui-input-block">
+            <input type="text" name="leader" th:value="${dept.leader}" class="layui-input" autocomplete="off"/>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">上级部门：</label>
+        <div class="layui-input-block">
+            <input type="text" name="parentId" id="tree" value="0" lay-filter="tree" class="layui-input" />
+        </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label">备注：</label>
+        <div class="layui-input-block">
+            <textarea type="text" name="note" th:text="${dept.note}" class="layui-input" autocomplete="off"/>
+        </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label">排序号：</label>
+        <div class="layui-input-block">
+            <input type="text" name="sort" th:value="${dept.sort}" class="layui-input" autocomplete="off"/>
+        </div>
+    </div>
+</form>
+
+
+<script th:inline="javascript">
+    layui.use(["form","treeSelect"], function () {
+        var form = layui.form
+            ,treeSelect = layui.treeSelect;
+
+        form.render();
+
+        treeSelect.render({
+            // 选择器
+            elem: '#tree',
+            // 数据
+            data: '../dept/doFindZTreeDeptNodes',
+            headers: {"token": layui.data(layui.setter.tableName)['token']},
+            // 异步加载方式：get/post，默认get
+            // type: 'post',
+            // 占位符
+            placeholder: '上级部门',
+            // 是否开启搜索功能：true/false，默认false
+            search: true,
+            // 一些可定制的样式
+            style: {
+                folder: {
+                    enable: true
+                },
+                line: {
+                    enable: true
+                }
+            },
+            // 加载完成后的回调函数
+            success: function (d) {
+                // 选中节点，根据id筛选
+                treeSelect.checkNode('tree', [[${dept.deptId == null? parentId: dept.parentId}]]);
+                // 刷新树结构
+                treeSelect.refresh('tree');
+            }
+        });
+
+
+    });
+</script>

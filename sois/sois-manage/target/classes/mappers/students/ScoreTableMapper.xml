@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tedu.sois.stu.dao.ScoreTableDao">
+
+
+    <insert id="insertScore" parameterType="com.tedu.sois.common.pojo.stu.ScoreTable" keyProperty="scoreId" useGeneratedKeys="true">
+        insert ignore into score_table(
+            stu_id,stu_name,
+            month_one, month_two,month_three,
+            week_one,week_two,week_three,
+            week_four,week_five,week_six,
+            week_seven,week_eight
+        )
+        values(
+            #{stuId},#{stuName},
+            #{monthOne},#{monthTwo},#{monthThree},
+            #{weekOne},#{weekTwo},#{weekThree},
+            #{weekFour},#{weekFive},#{weekSix},
+            #{weekSeven},#{weekEight}
+        )
+    </insert>
+
+
+    <select id="selectScorePage" resultType="com.tedu.sois.common.pojo.stu.ScoreTable">
+        SELECT score_id,s.stu_name stu_name,
+            month_one,dense_rank() over(ORDER BY month_one DESC) row_m1,
+            month_two,dense_rank() over(ORDER BY month_two DESC) row_m2,
+            month_three,dense_rank() over(ORDER BY month_three DESC) row_m3 ,
+            week_one,dense_rank() over(ORDER BY week_one DESC) row_w1,
+            week_two,dense_rank() over(ORDER BY week_two DESC) row_w2,
+            week_three,dense_rank() over(ORDER BY week_three DESC) row_w3,
+            week_four,dense_rank() over(ORDER BY week_four DESC) row_w4,
+            week_five,dense_rank() over(ORDER BY week_five DESC) row_w5,
+            week_six,dense_rank() over(ORDER BY week_six DESC) row_w6,
+            week_seven,dense_rank() over(ORDER BY week_seven DESC) row_w7,
+            week_eight,dense_rank() over(ORDER BY week_eight DESC) row_w8,
+            other_score_one,dense_rank() over(ORDER BY other_score_one DESC) rowOther1,
+            month_one+month_two+month_three+week_one+week_two+week_three+week_four+week_five+week_six++week_seven+week_eight sum_score,
+            left(b.stu_class,3) direction,b.class_room class_room,b.stu_class stu_class
+            <include refid="queryWhereId"/>
+            ORDER BY sum_score DESC
+            limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getRowCount" resultType="int">
+        SELECT count(c.stu_id) row_count FROM score_table st
+        LEFT JOIN
+        (
+        select s.stu_id,s.stu_name stu_name,left(b.stu_class,3) direction,b.class_room class_room,b.stu_class stu_class
+        <include refid="queryWhereId"/>
+        ) c
+        ON st.stu_id=c.stu_id
+    </select>
+
+
+    <sql id="queryWhereId">
+        FROM score_table s LEFT JOIN stu_base_info b ON s.stu_id=b.stu_id
+        <if test="(direction!=null and direction!='')
+            or (classRoomNum!=null and classRoomNum!='')
+            or (stuName!=null and stuName!='')
+            or (stuClass!=null and stuClass!='')">
+            HAVING
+        </if>
+        <if test="direction!=null and direction!=''">
+            direction in
+            <foreach collection="direction" item="data" index="index" open="(" separator="," close=")">
+                    #{data}
+            </foreach>
+        </if>
+        <if test="(direction!=null and direction!='' and classRoomNum!=null and classRoomNum!='')
+            or (direction!=null and direction!='' and stuName!=null and stuName!='')
+            or (direction!=null and direction!='' and stuClass!=null and stuClass!='')">
+            and
+        </if>
+        <if test="classRoomNum!=null and classRoomNum!=''">
+           class_room=#{classRoomNum}
+        </if>
+        <if test="(classRoomNum!=null and classRoomNum!='' and stuName!=null and stuName!='')
+            or (classRoomNum!=null and classRoomNum!='' and stuClass!=null and stuClass!='')">
+            and
+        </if>
+        <if test="stuName!=null and stuName!=''">
+            stu_name like concat(concat('%',#{stuName},'%'))
+        </if>
+        <if test="stuName!=null and stuName!='' and stuClass!=null and stuClass!=''">
+            and
+        </if>
+        <if test="stuClass!=null and stuClass!=''">
+            stu_class like concat(concat('%',#{stuClass},'%'))
+        </if>
+
+    </sql>
+
+
+    <select id="selectStuDirection" resultType="java.lang.String">
+        SELECT left(stu_class,3) FROM stu_base_info GROUP BY left(stu_class,3)
+    </select>
+
+
+</mapper>

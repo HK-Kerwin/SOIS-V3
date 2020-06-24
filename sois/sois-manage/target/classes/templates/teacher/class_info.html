@@ -1,0 +1,159 @@
+<style type="text/css">
+    .classInfo .layui-form-item {
+        margin: 20px 100px 10px 45px;
+    }
+
+    .classInfo .layui-form-label {
+        width: 80px;
+    }
+</style>
+
+<form class="layui-form classInfo" action=""  lay-filter="classInfoForm">
+
+    <div class="layui-form-item">
+        <label  class="layui-form-label">班级号</label>
+        <div class="layui-input-block">
+            <input type="text" name="className" id="className" placeholder="输入或点击输入框右侧区域"  class="layui-input"
+                   style="position:absolute;z-index:2;width:60%;border-right: 0;cursor:pointer;background-color: #F5F5F5;"
+                   lay-verify="required" onkeyup="search()" autocomplete="off">
+            <select lay-filter="chooseClassName" id="chooseClassName"  lay-search="" >
+                <option value="">可以搜索</option>
+                <option th:each="classNum:${classNum}" th:text="${classNum}"
+                        th:value="${classNum }" ></option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">班级方向</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="classDirection" id="classDirection"
+                   placeholder="班级方向" autocomplete="off" lay-verify="required" onkeyup="upCase()">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">备注说明</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="remark" id="remark"
+                   placeholder="备注说明" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <button class="layui-btn layui-btn-danger "
+                lay-filter="removeByName" lay-submit >
+            <i class="layui-icon">&#xe640;</i>删除
+        </button>
+    </div>
+
+</form>
+
+
+<script th:inline="javascript">
+    layui.use(['form'], function () {
+        let form = layui.form
+            ,layer = layui.layer,
+            $ = layui.$;
+
+        form.render();
+
+        $(document).on("input propertychange", "select[lay-search] ~ div input", function () {
+            if ($(this).val() == "") {
+                $("#chooseClassName").val(''); //清空原选项值
+                $(this).parent().next().find(".layui-this").addClass(" layui-hide").removeClass("layui-this"); //清除layui选中状态
+                $('#classDirection').val("");
+            }
+        });
+
+        form.on('select(chooseClassName)',function (data) {
+            $("#className").val(data.value);
+            $("#chooseClassName").next().find("dl").css({ "display": "none" });
+            form.render();
+            let className = data.value;
+            if (className == ''){
+                $('#classDirection').val("");
+                return false;
+            }
+            $.ajax({
+                url: '../crm/findClassDirectionByClassName',
+                data: {className:className},
+                type: 'post',
+                headers: {"token": layui.data(layui.setter.tableName)['token']},
+                success: function (res) {
+                    if (res.code == 0) {
+                        $('#classDirection').val(res.data);
+                    }{
+                        layer.msg(res.msg, {offset: '15px'});
+                    }
+                },
+                error: function (res) {
+                    layer.msg(res.msg, {offset: '15px'});
+                }
+            });
+        });
+
+        window.upCase = function(){
+            let value = $('#classDirection').val().toUpperCase();
+            $('#classDirection').val(value);
+        };
+        window.search = function () {
+            if($("#className").val() == ''){
+                $("#chooseClassName").next().attr('class','layui-form-select');
+                $('#classDirection').val("");
+                return false;
+            }
+            let value = $("#className").val().toUpperCase();
+            $("#className").val(value);
+            $("#chooseClassName").val(value);
+            form.render();
+            $("#chooseClassName").next().attr('class','layui-form-select layui-form-selected');
+            let dl = $("#chooseClassName").next().find("dl").children();
+            let j = -1;
+            for (let i = 0; i < dl.length; i++) {
+                if (dl[i].innerHTML.indexOf(value) <= -1) {
+                    j++;
+                }
+                if (j == dl.length-1) {
+                    $("#chooseClassName").next().attr('class','layui-form-select');
+                }
+            }
+        };
+
+        let lock = false;
+        form.on('submit(removeByName)', function (obj) {
+            if (lock) {
+                lock = false;
+                return false;
+            }
+            lock = true;
+            let className = obj.field.className;
+            let url = '../crm/doRemoveClassInfoByClassName';
+            $.ajax({
+                url: url,
+                data: {className:className},
+                type: 'post',
+                headers: {"token": layui.data(layui.setter.tableName)['token']},
+                success: function (res) {
+                    if (res.code == 0) {
+                        layer.msg(res.msg, {offset: '15px',time:1000},function () {
+                            let index = parent.layer.getFrameIndex(window.name);
+                            layer.close(index);
+                            //刷新，重新渲染表格
+                            location.reload();
+                        });
+                        return;
+                    }
+                    lock = false;
+                    layer.msg(res.msg, {offset: '15px'});
+                },
+                error: function (res) {
+                    lock = false;
+                    layer.msg(res.msg, {offset: '15px'});
+                }
+            });
+            return false;
+        });
+
+
+    });
+</script>

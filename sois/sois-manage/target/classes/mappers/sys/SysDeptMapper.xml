@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tedu.sois.sys.dao.SysDeptDao">
+
+    <insert id="insertDeptInfo" parameterType="com.tedu.sois.common.pojo.sys.SysDept"
+            useGeneratedKeys="true" keyProperty="deptId">
+        INSERT INTO sys_dept
+        (dept_name, leader, parent_id,note, sort, created_user, created_time)
+        values
+        (#{deptName},#{leader},#{parentId},#{note},#{sort},#{createdUser},#{createdTime})
+        <!--<trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptName != null  and deptName != ''">dept_name,</if>
+            <if test="leader != null  and leader != ''">leader,</if>
+            <if test="parentId != null  and parentId != ''">parent_id,</if>
+            <if test="note != null  and note != ''">note,</if>
+            <if test="sort != null  and sort != ''">sort,</if>
+            <if test="createdUser != null  and createdUser != ''">created_user,</if>
+            <if test="createdTime != null ">created_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptName != null  and deptName != ''">#{deptName},</if>
+            <if test="leader != null  and leader != ''">#{leader},</if>
+            <if test="parentId != null  and parentId != ''">#{parentId},</if>
+            <if test="note != null  and note != ''">#{note},</if>
+            <if test="sort != null  and sort != ''">#{sort},</if>
+            <if test="createdUser != null  and createdUser != ''">${createdUser},</if>
+            <if test="createdTime != null ">#{createdTime},</if>
+        </trim>-->
+    </insert>
+
+    <update id="updateDeptInfo"
+            parameterType="com.tedu.sois.common.pojo.sys.SysDept">
+         update sys_dept
+         set
+           dept_name=#{deptName},
+           leader=#{leader},
+           parent_id=#{parentId},
+           note=#{note},
+           sort=#{sort},
+           modified_user=#{modifiedUser},
+           modified_time=#{modifiedTime}
+        where dept_id=#{deptId}
+    </update>
+
+
+    <select id="selectDeptInfoList" resultType="java.util.Map">
+        select c.dept_id deptId,c.dept_name deptName,
+        c.leader leader,
+        c.parent_id parentId,
+        p.dept_name parentName,
+        c.note note,c.sort sort,
+        c.created_user createdUser,
+        c.created_time createdTime,
+        c.modified_user modifiedUser,
+        c.modified_time modifiedTime
+        from sys_dept c
+        left join sys_dept p
+        on c.parent_id=p.dept_id
+    </select>
+
+    <select id="findZTreeNodesIsParentId" resultType="com.tedu.sois.common.vo.Node">
+        select
+        p.dept_id id, p.dept_name name , p.parent_id parentId
+        from sys_dept p join sys_dept c
+        on p.dept_id=c.parent_id
+        where c.dept_id=#{deptId}
+    </select>
+
+</mapper>
+
+
+
+

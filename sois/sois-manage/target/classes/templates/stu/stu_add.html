@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>注册信息</title>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" th:href="@{../dist/layuiadmin/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{../dist/layuiadmin/style/admin.css}" media="all">
+
+    <style>
+        body {
+            margin: 10px 5px 15px 20px;
+        }
+    </style>
+
+</head>
+<body>
+
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>注册信息</legend>
+</fieldset>
+<!-- /.box-header -->
+<!-- form start -->
+<div class="layui-row">
+    <form id="stu_form" class="layui-form" action="" lay-filter="">
+        <div class="box-body">
+
+            <!-- 基本信息 -->
+            <div class="layui-form-item">
+                <h3 align="center"><span>基本信息</span></h3>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label for="stuClass" class="layui-form-label">班级</label>
+                    <div class="layui-input-inline">
+                        <select lay-filter="aihao" id="stuClass" name="stuClass" lay-verify="required" lay-search="">
+                            <option value="">可以搜索</option>
+                            <option th:each="classNum:${classNum}" th:text="${classNum}"
+                                    th:value="${classNum }"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label for="stuName" class="layui-form-label">姓名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="stuName" name="stuName" lay-verify="required"
+                               placeholder="请输入姓名" autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label for="phoneNumber" class="layui-form-label">手机号码</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="phoneNumber" name="phoneNumber"
+                               lay-verify="required|phone" autocomplete="off" placeholder="请输入手机号码">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label for="stuEmail" class="layui-form-label">邮箱</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input load-sys-dept" id="stuEmail" name="stuEmail"
+                               placeholder="请输入邮箱" list="stuEmail_list"
+                               autocomplete="off" lay-verify="required">
+                        <datalist id="stuEmail_list"></datalist>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label for="wechat" class="layui-form-label">微信</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="wechat" name="wechat" placeholder="请输入微信"
+                               autocomplete="off" lay-verify="required">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label for="idCard" class="layui-form-label">身份证号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="idCard" name="idCard" placeholder="请输入身份证号"
+                               autocomplete="off" lay-verify="required|identity">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label for="birth" class="layui-form-label">出生日期</label>
+                    <div class="layui-input-inline">
+                        <input placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input" id="birth" name="birth"
+                               lay-verify="required|date">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label for="nativePlace" class="layui-form-label">籍贯</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="nativePlace" name="nativePlace"
+                               autocomplete="off" placeholder="例如:贵州省贵阳市,到县或市即可" lay-verify="required">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label for="maritalStatus" class="layui-form-label">婚姻状况</label>
+                    <div class="layui-input-inline">
+                        <select lay-filter="aihao" id="maritalStatus" name="maritalStatus">
+                            <option>单身</option>
+                            <option>有对象</option>
+                            <option>未婚</option>
+                            <option>已婚未孕</option>
+                            <option>已婚在孕</option>
+                            <option>已婚已孕</option>
+                            <option>离异</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label for="rolesId" class="layui-form-label">性别</label>
+                    <div class="layui-input-block" id="rolesId">
+                        <input id="man" type="radio" checked="checked" name="gender" value="男" title="男"/>
+                        <input id="woman" type="radio" name="gender" value="女" title="女"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 教育背景 -->
+            <div class="layui-form-item">
+                <h3 align="center"><span>教育背景</span></h3>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label for="graduationSchool" class="layui-form-label">毕业学校</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="graduationSchool" name="graduationSchool"
+                               autocomplete="off" placeholder="没有或者记不住就不写">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label for="professional" class="layui-form-label">专业</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="professional" name="professional"
+                               autocomplete="off" placeholder="没有或者记不住就不写">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label for="graduationTime" class="layui-form-label">毕业时间</label>
+                    <div class="layui-input-inline" title="忘记了就选当天日期">
+                        <input placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input" id="graduationTime"
+                               name="graduationTime" lay-verify="required|date">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label for="educationBackground" class="layui-form-label">学历</label>
+                    <div class="layui-input-inline">
+                        <select lay-filter="aihao" id="educationBackground" name="educationBackground">
+                            <option>初中</option>
+                            <option>高中</option>
+                            <option>高职</option>
+                            <option>大专</option>
+                            <option>三本</option>
+                            <option>二本</option>
+                            <option>普通一本</option>
+                            <option>一本(985或211)</option>
+                            <option>硕士</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label for="ebDirection" class="layui-form-label">学历性质</label>
+                    <div class="layui-input-inline">
+                        <select lay-filter="aihao" id="ebDirection" name="ebDirection">
+                            <option>统招</option>
+                            <option>网教/自考</option>
+                            <option>民办</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label for="ebReal" class="layui-form-label">学信网可查</label>
+                    <div class="layui-input-inline">
+                        <select lay-filter="aihao" id="ebReal" name="ebReal">
+                            <option>是</option>
+                            <option>否</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label for="ebDouble" class="layui-form-label">毕业证具备</label>
+                    <div class="layui-input-inline">
+                        <select lay-filter="aihao" id="ebDouble" name="ebDouble">
+                            <option>无</option>
+                            <option>毕业无证</option>
+                            <option>高职在读</option>
+                            <option>大专在读</option>
+                            <option>大学在读</option>
+                            <option>只有毕业证</option>
+                            <option>双证齐全</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label for="englishLevel" class="layui-form-label">英语水平</label>
+                    <div class="layui-input-inline">
+                        <select lay-filter="aihao" id="englishLevel" name="englishLevel">
+                            <option>无</option>
+                            <option>四级</option>
+                            <option>六级</option>
+                            <option>八级</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md12">
+
+                <!-- 最近工作经历 -->
+                <div class="layui-form-item">
+                    <h3 align="center">
+                        <span>最近工作经历</span> <br/>
+                        <span style='color:#F00'>如果没有则不填写,自动上传默认值</span>
+                    </h3>
+                </div>
+
+                <div class="layui-col-md8">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label for="oldJobs" class="layui-form-label">岗位</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="oldJobs" name="oldJobs" value="无" placeholder="简要写就好"
+                                       autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label for="oldJobsSalary" class="layui-form-label">薪资</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="oldJobsSalary" name="oldJobsSalary" value="0"
+                                       placeholder="写整数" lay-verify="number" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label for="oldJobsMonth" class="layui-form-label">工作月数</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="oldJobsMonth" name="oldJobsMonth" value="0"
+                                       autocomplete="off" lay-verify="number">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 紧急联系人 -->
+                    <div class="layui-form-item">
+                        <h3 align="center">
+                            <span>紧急联系人</span><br/>
+                            <span style='color:#F00'>需填写两个人</span>
+                        </h3>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label for="urgentContactP1" class="layui-form-label">紧急联系人1</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="urgentContactP1" name="urgentContactP1"
+                                       autocomplete="off" placeholder="请填写直系亲属" lay-verify="required">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label for="p1Relation" class="layui-form-label">与本人关系</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="p1Relation" name="p1Relation" placeholder="不能是朋友关系"
+                                       autocomplete="off" lay-verify="required|relationCheck">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label for="p1PhoneNumber" class="layui-form-label">联系人电话1</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="p1PhoneNumber" name="p1PhoneNumber"
+                                       autocomplete="off" lay-verify="required|phone">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label for="urgentContactP2" class="layui-form-label">紧急联系人2</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="urgentContactP2" name="urgentContactP2"
+                                       autocomplete="off" placeholder="请填写直系亲属" lay-verify="required">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label for="p2Relation" class="layui-form-label">与本人关系</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="p2Relation" name="p2Relation" placeholder="不能是朋友关系"
+                                       autocomplete="off" lay-verify="required|relationCheck">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label for="p2PhoneNumber" class="layui-form-label">联系人电话2</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" id="p2PhoneNumber" name="p2PhoneNumber"
+                                       autocomplete="off" lay-verify="required|phone">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 归属 -->
+                    <div class="layui-form-item">
+                        <h3 align="center"><span>归属</span></h3>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label for="classRoom" class="layui-form-label">所在教室</label>
+                            <div class="layui-input-inline">
+                                <select lay-filter="aihao" id="classRoom" name="classRoom">
+                                    <option>0</option>
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                    <option>6</option>
+                                    <option>7</option>
+                                    <option>8</option>
+                                    <option>9</option>
+                                    <option>10</option>
+                                    <option>大教室</option>
+                                    <option>实训室</option>
+                                    <option>Java训练营</option>
+                                    <option>UI训练营</option>
+                                    <option>校外</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label for="stuWhere" class="layui-form-label">归属中心</label>
+                            <div class="layui-input-inline">
+                                <select lay-filter="aihao" id="stuWhere" name="stuWhere">
+                                    <option value="贵阳">贵阳</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label for="stuState" class="layui-form-label">状态</label>
+                            <div class="layui-input-inline">
+                                <select lay-filter="aihao" id="stuState" name="stuState">
+                                    <option value="全日制">全日制</option>
+                                    <option value="VIP">VIP</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-md4">
+                    <div class="layui-form-item">
+                        <div class="layui-input-inline">
+                            <input name="avatar"  placeholder="图片地址" class="layui-input" type="hidden">
+                            <div class="layui-upload-drag" id="chooseFileBtn">
+                                <i class="layui-icon layui-icon-picture"></i>
+                                <p>点击或拖拽文件到此</p>
+                                <div class="" id="uploadDemoView">
+                                    <hr>
+                                    <img th:src="@{../dist/layuiadmin/img/defualt.png}"
+                                         class="layui-upload-img" id="showImg" width="115px" height="150px">
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="layui-input-inline " style="width: auto;">
+                        <button type="button" class="layui-btn layhi ui-btn-primary"
+                                id="stu-reg-avatarUpload">
+                            <i class="layui-icon">&#xe67c;</i>上传一寸照
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="stuSaveFrom">保存</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+
+<script th:src="@{../dist/layuiadmin/layui/layui.js}"></script>
+<!--<script th:src="@{../bower_components/jquery/dist/jquery.js}"></script>-->
+<script>
+
+    layui.config({
+        base: '../dist/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index','form', 'layedit', 'laydate','upload'], function () {
+        var form = layui.form
+            , layer = layui.layer
+            , layedit = layui.layedit
+            , laydate = layui.laydate
+            , upload = layui.upload
+            , $ = layui.jquery;
+
+        layer.msg('注册页面',{offers:'15px',time:2000})
+
+        //日期
+        laydate.render({
+            elem: '#birth'
+        });
+        laydate.render({
+            elem: '#graduationTime'
+        });
+
+        //自定义验证规则
+        form.verify({
+            relationCheck: function (value, item) {
+                if (value.indexOf('友') != -1) {
+                    return '不能是朋友关系';
+                }
+            }
+        });
+
+        /* 邮箱后缀自动补全 */
+        inputList($("#stuEmail"), $("#stuEmail_list"));
+
+        let files;
+
+        $('#stu-reg-avatarUpload,#chooseFileBtn').on('click',function () {
+            layui.layer.msg('注册完毕,查询后进行编辑,再做上传',{offers:'10px'});
+        })
+
+        let lock = false;
+        //监听提交
+        form.on('submit(stuSaveFrom)', function (data) {
+            if (lock) {
+                lock = false;
+                return false;
+            }
+            lock = true;
+            $.ajax({
+                url: 'doSaveStuBaseInfo',
+                type: 'post',
+                data: data.field,
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.code == '0') {
+                        layer.msg(res.msg,{offers:'15px',icon: 1,time: 2000},function () {
+                            let index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        });
+                    } else{
+                        lock = false;
+                        layer.msg(res.msg);
+                    }
+                },
+                error: function (data) {
+                    lock = false;
+                    layer.msg(data.msg)
+                }
+            });
+
+            return false;
+        });
+
+    });
+</script>
+</html>
+
+    
+    
+    
+    
+    

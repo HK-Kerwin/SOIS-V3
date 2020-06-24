@@ -1,0 +1,122 @@
+<style type="text/css">
+    .menu .layui-form-item {
+        margin: 20px 100px 10px 45px;
+    }
+
+    .menu .layui-form-label {
+        width: 80px;
+    }
+</style>
+
+<form class="layui-form menu" action="save" method="post" lay-filter="stuform">
+    <input type="hidden" name="roleId" th:value="${role.roleId}"/>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">角色名称</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="roleName" id="roleName" th:value="${role.roleName}"
+                   placeholder="角色名称" autocomplete="off" lay-verify="required">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">备注说明</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="note" id="note" th:value="${role.note}"
+                   placeholder="备注说明" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">角色权限</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="roleKey" id="roleKey" th:value="${role.roleKey}"
+                   placeholder="角色权限" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">数据范围</label>
+        <div class="layui-input-block">
+            <select lay-filter="aihao" id="dataScope" name="dataScope" th:value="${role.dataScope}" lay-verify="required">
+                <option value="">请选择</option>
+                <option value="1" th:selected="${role.dataScope == '1'}">全部数据权限</option>
+                <option value="2" th:selected="${role.dataScope == '2'}">自定数据权限</option>
+                <option value="3" th:selected="${role.dataScope == '3'}">本部门数据权限</option>
+                <option value="4" th:selected="${role.dataScope == '4'}">本部门及以下数据权限</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">显示顺序</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" name="roleSort" id="roleSort" th:value="${role.roleSort}"
+                   placeholder="显示顺序" autocomplete="off">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">菜单授权</label>
+        <div id="xm-select" class="layui-input-block" lay-verify="chooseSelect">
+        </div>
+    </div>
+</form>
+
+
+<script th:inline="javascript">
+    layui.use(['form','xmSelect'], function () {
+        var form = layui.form,
+            xmSelect = layui.xmSelect;
+
+        form.render();
+
+        let roleIds = [[${role.menuIds}]];
+        let nodes = [[${nodes}]];
+
+        let roleSelect = xmSelect.render({
+            el: '#xm-select',
+            tips: '请为角色赋予菜单权限',
+            autoRow: true,
+            filterable: true,
+            height: '300px',//'auto',
+            name: 'menuIds',
+            tree: {
+                show: true,
+                showFolderIcon: true,
+                showLine: true,
+                simple: true,
+                indent: 20,
+                expandedKeys: roleIds == null ? [-1] : roleIds,
+                strict:false
+            },
+            toolbar: {
+                show: true,
+                list: ['ALL', 'REVERSE', 'CLEAR']
+            },
+            model: {
+                label: {
+                    type: 'block',
+                    block: {
+                        //最大显示数量, 0:不限制
+                        showCount: 1,
+                        //是否显示删除图标
+                        showIcon: true,
+                        template: function(item, sels){
+                            return item.type == 1 ? '<span class="layui-icon layui-icon-layer"></span>' + item.name : '<i class="layui-icon layui-icon-radio"></i>' + item.name;
+                        },
+                    }
+
+                }
+            },
+            data:nodes
+        })
+
+        roleSelect.append(roleIds);
+
+        //自定义验证规则
+        form.verify({
+            chooseSelect: function (value, item) {
+                if (roleSelect.getValue('value').length == 0) {
+                    return '请为角色赋予菜单权限';
+                }
+            }
+        });
+
+    });
+</script>
