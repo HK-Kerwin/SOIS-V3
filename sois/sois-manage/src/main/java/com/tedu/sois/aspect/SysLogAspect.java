@@ -48,23 +48,23 @@ public class SysLogAspect {//SysLogAspect.class
     //4)方法异常抛出为Throwable类型
     @Around("logPointCut()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
-        //1.记录目标方法开始执行时间
-        long t1 = System.currentTimeMillis();
-        LOGGER.info("start time:" + t1);
-        Object result;
         try {
+            //1.记录目标方法开始执行时间
+            long t1 = System.currentTimeMillis();
             //2.执行目标方法
-            result = joinPoint.proceed();//假如有下一个切面先执行切面对象方法
+            Object result = joinPoint.proceed();//假如有下一个切面先执行切面对象方法
             //3.记录目标方法结束执行时间
             long t2 = System.currentTimeMillis();
-            LOGGER.info("end time:" + t2);
+            String className = joinPoint.getSignature().getDeclaringTypeName();
+            String methodName = joinPoint.getSignature().getName();
+            long time = t2-t1;
+            LOGGER.info(className + " Execution "+methodName+"() time consuming {} ms",time);
             //记录用户行为日志
-            saveLog(joinPoint, (t2 - t1));
+            saveLog(joinPoint, time);
+            return result;
         }catch (Throwable e){
-            LOGGER.info("error is {} " + e.getMessage());
             throw  e;
         }
-        return result;
     }
 
     @Autowired
