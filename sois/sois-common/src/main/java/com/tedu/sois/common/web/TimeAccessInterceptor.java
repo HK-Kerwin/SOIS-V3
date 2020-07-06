@@ -37,7 +37,7 @@ public class TimeAccessInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest req, HttpServletResponse resp, Object o) throws Exception {
-        System.out.println("preHandle()");
+        LOG.info("come in preHandle");
 
         Map<String, String[]> mapIn = req.getParameterMap();
         JSON jsonObject = JSONUtil.parseObj(mapIn);
@@ -51,10 +51,9 @@ public class TimeAccessInterceptor implements HandlerInterceptor {
         resp.setHeader("Access-Control-Allow-Credentials","true");
         resp.setHeader("P3P", "CP=CAO IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT");
 
-        LOG.info("req ,路径:" + stringBuffer + ",入参:" + JSONUtil.toJsonStr(jsonObject));
+        LOG.info("Request Path:" + stringBuffer + ",入参:" + JSONUtil.toJsonStr(jsonObject));
 
         //校验APP的登陆状态，如果token 没有过期
-        LOG.info("come in preHandle");
         String oldToken = req.getHeader("token");
         LOG.info("token:" + oldToken);
         /*刷新token，有效期延长2小时*/
@@ -109,18 +108,18 @@ public class TimeAccessInterceptor implements HandlerInterceptor {
      */
     public void dealErrorReturn(HttpServletRequest req, HttpServletResponse resp, Object obj) {
         String json = (String) obj;
-        PrintWriter writer = null;
+        PrintWriter pw = null;
         resp.setCharacterEncoding("UTF-8");
         resp.setContentType("application/json; charset=utf-8");
         try {
-            writer = resp.getWriter();
-            writer.print(json);
+            pw = resp.getWriter();
+            pw.print(json);
 
         } catch (IOException ex) {
-            LOG.error("response error", ex);
+            ex.printStackTrace();
         } finally {
-            if (writer != null) {
-                writer.close();
+            if (pw != null) {
+                pw.close();
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.tedu.sois.teacher.controllerpage;
 
 import com.tedu.sois.common.exception.ServiceException;
-import com.tedu.sois.common.pojo.TopicCategory;
+import com.tedu.sois.common.pojo.topic.TopicCategory;
 import com.tedu.sois.stu.service.StuBaseInfoService;
 import com.tedu.sois.teacher.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;

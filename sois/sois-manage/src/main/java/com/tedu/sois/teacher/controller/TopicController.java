@@ -1,6 +1,6 @@
 package com.tedu.sois.teacher.controller;
 
-import com.tedu.sois.common.pojo.Topic;
+import com.tedu.sois.common.pojo.topic.Topic;
 import com.tedu.sois.common.vo.JsonResult;
 import com.tedu.sois.teacher.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;

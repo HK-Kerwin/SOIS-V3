@@ -1,4 +1,4 @@
-package com.tedu.sois.common.pojo;
+package com.tedu.sois.common.pojo.topic;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

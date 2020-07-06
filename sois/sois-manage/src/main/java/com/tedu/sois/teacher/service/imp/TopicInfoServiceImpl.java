@@ -2,7 +2,7 @@ package com.tedu.sois.teacher.service.imp;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.tedu.sois.common.pojo.TopicInfo;
+import com.tedu.sois.common.pojo.topic.TopicInfo;
 import com.tedu.sois.common.vo.JsonResult;
 import com.tedu.sois.teacher.dao.TopicInfoDao;
 import com.tedu.sois.teacher.service.TopicInfoService;

@@ -1,7 +1,7 @@
 package com.tedu.sois.teacher.service;
 
-import com.tedu.sois.common.pojo.Topic;
-import com.tedu.sois.common.pojo.TopicCategory;
+import com.tedu.sois.common.pojo.topic.Topic;
+import com.tedu.sois.common.pojo.topic.TopicCategory;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package com.tedu.sois.teacher.service.imp;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.tedu.sois.common.pojo.Topic;
-import com.tedu.sois.common.pojo.TopicCategory;
+import com.tedu.sois.common.pojo.topic.Topic;
+import com.tedu.sois.common.pojo.topic.TopicCategory;
 import com.tedu.sois.teacher.dao.TopicCategoryDao;
 import com.tedu.sois.teacher.dao.TopicDao;
 import com.tedu.sois.teacher.service.TopicService;

@@ -1,8 +1,9 @@
-package com.tedu.sois.common.pojo;
+package com.tedu.sois.common.pojo.topic;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.tedu.sois.common.pojo.BaseEntity;
 
 /**
  * @author LYS On 2020/6/18 2:00.
