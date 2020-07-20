@@ -111,6 +111,7 @@ public class SysMenuServiceImpl implements SysMenuService {
         return list;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Node> findZtreeMenuNodes() {
         List<Node> nodes = sysMenuDao.selectZtreeMenuNodes();
@@ -138,7 +139,7 @@ public class SysMenuServiceImpl implements SysMenuService {
         return result;
     }
 
-
+    @Transactional(readOnly = true)
     @Override
     public List<SysUserMenuVo> findMenusByUserId(Long userId) {
         //获取角色id
